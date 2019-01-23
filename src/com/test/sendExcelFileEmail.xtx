@@ -1,0 +1,552 @@
+Java生成excel文件邮件发送给多个人
+2017年03月23日 13:15:28 isea点xin 阅读数：4207
+需要一个临时系统功能可以查询数据结果生成excel文件，在指定时间把excel文件发送个多个人，并抄送给多个人。
+
+        技术要点：Java使用poi生成excel文件通过javamail邮件发送给多个人；数据库mysql
+        代码有部分删减剪！！只能参考修改，不能直接使用！！
+
+==================================
+相关jar
+==================================
+<!-- poi -->
+<dependency>
+<groupId>org.apache.poi</groupId>
+<artifactId>poi</artifactId>
+<version>3.10-FINAL</version>
+</dependency>
+
+<dependency>
+<groupId>org.apache.poi</groupId>
+<artifactId>poi-ooxml</artifactId>
+<version>3.10-FINAL</version>
+</dependency>
+
+<!-- BEGIN: Java mail -->
+<dependency>
+<groupId>javax.mail</groupId>
+<artifactId>mail</artifactId>
+<version>${javamail.version}</version>
+</dependency>
+<dependency>
+<groupId>javax.activation</groupId>
+<artifactId>activation</artifactId>
+<version>1.1.1</version>
+</dependency>
+<!-- END: Java mail -->
+
+==================================
+ 相关数据表
+==================================
+        CREATE TABLE `mail_set` (
+        `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+        `code` varchar(100) NOT NULL COMMENT '唯一主键',
+        `from_address` varchar(100) DEFAULT NULL COMMENT '发送邮箱',
+        `from_address_pwd` varchar(100) DEFAULT NULL COMMENT '发送邮箱密码',
+        `smtp` varchar(100) DEFAULT NULL COMMENT '简单邮件传输协议',
+        `debug` int(1) DEFAULT '0' COMMENT 'debug模式 0 开启 1 关闭',
+        `auth` int(1) DEFAULT '0' COMMENT '需要身份验证  0需要 1 不需要',
+        `host` varchar(100) DEFAULT NULL COMMENT '发送邮件的服务Ip',
+        `port` varchar(100) DEFAULT NULL COMMENT '端口',
+        `copyto` varchar(2000) DEFAULT NULL COMMENT '发件抄送人邮箱 cc@qq.com;dd@qq.com',
+        `remark` varchar(255) DEFAULT NULL,
+        `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+        `creater` bigint(20) DEFAULT NULL,
+        `modifier` bigint(20) DEFAULT NULL,
+        `modify_time` datetime DEFAULT NULL,
+        `version` varchar(255) DEFAULT NULL,
+        PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='发件邮箱账号设置';
+
+
+
+        CREATE TABLE `send_bi_mail` (
+        `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
+        `city_id` bigint(20) DEFAULT NULL COMMENT '城市id',
+        `city_name` varchar(100) DEFAULT NULL COMMENT '城市',
+        `user_name` varchar(100) DEFAULT NULL COMMENT '业管人员姓名',
+        `email` varchar(100) DEFAULT NULL COMMENT '业管人员邮箱',
+        `bi_type` bigint(20) DEFAULT '1' COMMENT '1,收款明细，2其他',
+        `tos` varchar(2000) DEFAULT NULL COMMENT '群发邮箱aa@qq.com;bb@qq.com',
+        `remark` varchar(255) DEFAULT NULL,
+        `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+        `creater` bigint(20) DEFAULT NULL,
+        `modifier` bigint(20) DEFAULT NULL,
+        `modify_time` datetime DEFAULT NULL,
+        `version` varchar(255) DEFAULT NULL,
+        PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8 COMMENT='报表邮件收件人';
+
+
+==================================
+java代码
+==================================
+
+import java.io.Serializable;
+/**
+ * 邮箱账号信息
+ */
+public class MailSetEntity extends SsAuditAuto {
+    // 唯一主键
+    private String code;
+    // 发送邮箱
+    private String fromAddress;
+    // 发送邮箱密码
+    private String fromAddressPwd;
+    // 简单邮件传输协议
+    private String smtp;
+    // debug模式
+    private Long debug;
+    // 发送邮件的服务Ip
+    private String host;
+    // 端口
+    private String port;
+    // 需要身份验证
+    private Long auth;
+    // 抄送人
+    private String copyto;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+import java.io.Serializable;
+/**
+ * 邮件发送信息
+ */
+public class MailInfoEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
+    // 收件人
+    private String[] tos;
+    // 抄送人
+    private String[] copyto;
+    // 附件地址
+    private String fileAddress;
+    // 附件名称
+    private String fileName;
+    // 主题
+    private String subject;
+    // 正文
+    private String context;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.sql.SQLException;
+import java.io.IOException;
+import java.io.OutputStream;
+/**
+ * bi报表邮件定时发送
+ */
+@Service("sendBiMailService")
+public class SendBiMailServiceImpl implements SendBiMailService {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+    // 报表临时文件目录
+    public static final String BI_TMP_FILES = SendBiMailServiceImpl.class.getResource("/").getPath() + "bitmpfiles/";
+    // 发送邮箱账号
+    public static final String MAIL_BI_CODE = "MAIL_BI_CODE";
+
+    @Autowired
+    private SendBiMailDao sendBiMailDao;
+    @Autowired
+    private SendBiMailUserDao sendBiMailUserDao;
+    @Autowired
+    private MailSetDao mailSetDao;
+
+    @Override
+    public void sendMail() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        Date time = cal.getTime();
+        String yesterday = new SimpleDateFormat("yyyy-MM-dd").format(time);
+        String date = DateTools.formatDateTime(new Date(), DateTools.YYYY_MM_DD);
+        String dateTableName = DateTools.formatDateTime(new Date(), DateTools.YYYYMMDD);
+        // 邮箱账号信息
+        MailSetEntity mailSet = mailSetDao.queryByKey(MAIL_BI_CODE);
+        if (mailSet != null) {
+            SendBiMailUserEntity city = sendBiMailUserDao.queryCity(条件查询);
+            // 先删除昨天的文件
+            String yesterDayFileName = city.getCityName() + yesterday + "收款明细.xls";
+            String yesterDayFileFullPath = BI_TMP_FILES + yesterDayFileName;
+            DeleteFileUtil.deleteFile(yesterDayFileFullPath);
+            // 创建当日文件
+            String fileName = city.getCityName() + date + "收款明细.xls";
+            String fileFullPath = BI_TMP_FILES + fileName;
+            // 数据库查询数据结果集
+            List<SendBiMailEntity> sendBiMailEntityList = sendBiMailDao.queryList(条件查询);
+            if (sendBiMailEntityList.size() > 0) {
+                // 生成excel文件
+                createExcel(city, fileFullPath, sendBiMailEntityList);
+                // 设置邮件发送信息
+                MailInfoEntity mailInfo = new MailInfoEntity();
+                mailInfo.setSubject(city.getCityName() + date + "销售报表明细");
+                mailInfo.setFileAddress(fileFullPath);
+                mailInfo.setFileName(fileName);
+                mailInfo.setContext(city.getCityName() + date + " 销售报表明细，请查收。\n -- BI报表系统");
+                // 发送邮件给城市业管人员
+                sendEmail(mailSet, mailInfo, city);
+            } else {
+                logger.info(city.getCityName() + " 当日没有收款明细，邮件不发送");
+            }
+        } else {
+            logger.info("没有找到发送邮箱账号：" + MAIL_BI_CODE);
+        }
+    }
+
+    /**
+     * 发送邮件给城市业管人员
+     *
+     * @param city 城市信息
+     */
+    public void sendEmail(MailSetEntity mailSet, MailInfoEntity mailInfo, SendBiMailUserEntity city) {
+        // 发送邮件
+        try {
+            // 设置收件人
+            if (StringUtils.isNotBlank(city.Tos())) {
+                String[] tos = city.getTos.split(";");
+                mailInfo.setTos(tos);
+            }
+            // 设置抄送人
+            if (StringUtils.isNotBlank(mailSet.getCopyto())) {
+                String[] copyto = mailSet.getCopyto().split(";");
+                mailInfo.setCopyto(copyto);
+            }
+            SendMailUtil.send(mailSet, mailInfo);
+            logger.info("发送成功 >>>>" + city.getCityName() + " 的销售报表收款明细给：" + toStr.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.info(city.getCityName() + " 的销售报表收款明细发送邮件失败");
+        }
+    }
+
+    /**
+     * 创建Excel
+     *
+     * @param city                 城市信息
+     * @param fileFullPath         文件路径
+     * @param sendBiMailEntityList 数据内容
+     */
+    public void createExcel(SendBiMailUserEntity city, String fileFullPath, List<SendBiMailEntity> sendBiMailEntityList) {
+        OutputStream out = null;
+        try {
+            //out = new FileOutputStream(new File("E:\\北京2017-03-20收款明细.xls"));
+            out = new FileOutputStream(new File(fileFullPath));
+            write(out, sendBiMailEntityList);
+            logger.info("生成" + city.getCityName() + "销售报表收款明细EXCEL 成功");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            logger.info("生成" + city.getCityName() + "销售报表收款明细EXCEL 失败");
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 生成Excel文件的方法write
+     *
+     * @param outputStream
+     * @throws SQLException
+     */
+    public void write(OutputStream outputStream, List<SendBiMailEntity> list) {
+        // 初始一个workbook
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        // 创建单个sheet
+        HSSFSheet sheet = workbook.createSheet("sheet0");
+        // 创建第一行，设置列名
+        HSSFRow row0 = sheet.createRow(0);
+        row0.setHeight((short) 400);             // 设置行高
+        HSSFCell cell = null;                    // Excel的列
+        HSSFFont font = workbook.createFont();          // 设置字体
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);   // 粗体显示
+        font.setColor(HSSFFont.COLOR_NORMAL);           // 设置单元格字体的颜色
+        HSSFCellStyle style = workbook.createCellStyle();   // 样式
+        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+        // 设置边框样式
+        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
+        // 设置边框颜色
+        style.setTopBorderColor(HSSFColor.BLACK.index);
+        style.setBottomBorderColor(HSSFColor.BLACK.index);
+        style.setLeftBorderColor(HSSFColor.BLACK.index);
+        style.setRightBorderColor(HSSFColor.BLACK.index);
+        // 设置文本格式
+        HSSFDataFormat format = workbook.createDataFormat();
+        style.setDataFormat(format.getFormat("@"));
+
+        StringBuffer tableHeaderStr = new StringBuffer("客户姓名;手机号;收款时间;pos单号;收款金额;收据号;项目编号;项目名称;城市编号;城市名称");
+        String[] tableHeader = tableHeaderStr.toString().split(";");
+        short cellNumber = (short) tableHeader.length;  // 表的列数
+        for (int k = 0; k < cellNumber; k++) {
+            int i = 0;
+            i += k;
+            short b = 5000;
+            cell = row0.createCell(i);          // 创建第0行第k列
+            cell.setCellValue(tableHeader[k]);  // 设置第0行第k列的值
+            sheet.setColumnWidth(i, b);         // 设置列的宽度
+            style.setFont(font);                // 设置字体风格
+            cell.setCellStyle(style);
+        }
+
+
+        HSSFCellStyle styleContext = workbook.createCellStyle();
+        styleContext.setWrapText(true);
+        styleContext.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+        // 设置边框样式
+        styleContext.setBorderTop(HSSFCellStyle.BORDER_THIN);
+        styleContext.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        styleContext.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+        styleContext.setBorderRight(HSSFCellStyle.BORDER_THIN);
+        // 设置边框颜色
+        styleContext.setTopBorderColor(HSSFColor.BLACK.index);
+        styleContext.setBottomBorderColor(HSSFColor.BLACK.index);
+        styleContext.setLeftBorderColor(HSSFColor.BLACK.index);
+        styleContext.setRightBorderColor(HSSFColor.BLACK.index);
+        // 设置文本格式
+        styleContext.setDataFormat(format.getFormat("@"));
+
+        if (list.size() > 0) {
+            // 创建剩余行
+            for (int rowIndex = 1; rowIndex <= list.size(); rowIndex++) {
+                HSSFRow row = sheet.createRow(rowIndex);
+                SendBiMailEntity entity = list.get(rowIndex - 1);
+                // 创建多列
+                for (int cellIndex = 0; cellIndex < 10; cellIndex++) {
+                    cell = row.createCell(cellIndex);
+                    cell.setCellStyle(styleContext);               // 设置风格
+                    switch (cellIndex) {
+                        case 0:
+                            cell.setCellValue(entity.getClientName());
+                            break;
+                        case 1:
+                            cell.setCellValue(entity.getClientPhone());
+                            break;
+                        case 2:
+                            cell.setCellValue(entity.getCreateTime());
+                            break;
+                        case 3:
+                            cell.setCellValue(entity.getPoseNo());
+                            break;
+                        case 4:
+                            cell.setCellValue(entity.getInvoiceAmount());
+                            break;
+                        case 5:
+                            cell.setCellValue(entity.getReceiptNo());
+                            break;
+                        case 6:
+                            cell.setCellValue(entity.getProjectId());
+                            break;
+                        case 7:
+                            cell.setCellValue(entity.getProjectName());
+                            break;
+                        case 8:
+                            cell.setCellValue(entity.getCityId());
+                            break;
+                        case 9:
+                            cell.setCellValue(entity.getCityName());
+                            break;
+                    }
+                }
+            }
+        } else {
+            HSSFRow row = sheet.createRow(1);
+            cell = row.createCell(0);
+            cell.setCellValue("没有收款明细");
+        }
+        try {
+            workbook.write(outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+import java.util.Properties;
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.*;
+/**
+ * 通过JavaMail发送邮件
+ */
+public class SendMailUtil {
+    /*
+     * 发送邮件到指定邮箱
+     * 收件人，抄送人 ，附件地址，附件名称
+     */
+    public static void send(MailSetEntity mailSet, MailInfoEntity mailInfo) throws Exception {
+        // 1.创建Session，包含邮件服务器网络连接信息
+        Properties props = new Properties();
+        // 指定邮件的传输协议，smtp;同时通过验证
+        props.setProperty("mail.transport.protocol", "smtp");
+        props.setProperty("mail.smtp.auth", mailSet.getAuth());
+        Session session = Session.getDefaultInstance(props);
+        // 开启调试模式
+        session.setDebug(mailSet.getDebug());
+
+        // 2.编辑邮件内容
+        Message message = new MimeMessage(session);
+        // 设置邮件消息头
+        message.setFrom(new InternetAddress(mailSet.getFromAddress()));
+        // 创建邮件接收者地址
+        String[] tos = mailInfo.getTos();
+        if (tos != null && tos.length != 0) {
+            InternetAddress[] to = new InternetAddress[tos.length];
+            // 设置邮件消息的发送者
+            for (int i = 0; i < tos.length; i++) {
+                to[i] = new InternetAddress(tos[i]);
+            }
+            message.setRecipients(Message.RecipientType.TO, to);
+        }
+        // 设置邮件抄送者地址
+        String[] copyto = mailInfo.getCopyto();
+        if (copyto != null && copyto.length != 0) {
+            InternetAddress[] toCC = new InternetAddress[copyto.length];
+            // 设置邮件消息的发送者
+            for (int i = 0; i < copyto.length; i++) {
+                toCC[i] = new InternetAddress(copyto[i]);
+            }
+            message.addRecipients(Message.RecipientType.CC, toCC);
+        }
+
+        // 设置主题
+        message.setSubject(mailInfo.getSubject());
+        // 设置邮件消息内容、包含附件
+        Multipart msgPart = new MimeMultipart();
+        message.setContent(msgPart);
+
+        MimeBodyPart body = new MimeBodyPart();   // 正文
+        MimeBodyPart attach = new MimeBodyPart(); // 附件
+
+        msgPart.addBodyPart(body);
+        msgPart.addBodyPart(attach);
+
+        // 设置正文内容
+        body.setContent(mailInfo.getContext(), "text/html;charset=utf-8");
+        // 设置附件内容
+        attach.setDataHandler(new DataHandler(new FileDataSource(mailInfo.getFileAddress())));
+        attach.setFileName((MimeUtility.encodeText(mailInfo.getFileName())));
+
+        message.saveChanges();
+
+        // 3.发送邮件
+        Transport trans = session.getTransport();
+        trans.connect(mailSet.getSmtp(), mailSet.getFromAddress(), mailSet.getFromAddressPwd());
+        trans.sendMessage(message, message.getAllRecipients());
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+import java.io.File;
+/**
+ * 删除文件和目录
+ */
+public class DeleteFileUtil {
+    /**
+     * 删除文件，可以是文件或文件夹
+     *
+     * @param fileName 要删除的文件名
+     * @return 删除成功返回true，否则返回false
+     */
+    public static boolean delete(String fileName) {
+        File file = new File(fileName);
+        if (!file.exists()) {
+            System.out.println("删除文件失败:" + fileName + "不存在！");
+            return false;
+        } else {
+            if (file.isFile())
+                return deleteFile(fileName);
+            else
+                return deleteDirectory(fileName);
+        }
+    }
+
+    /**
+     * 删除单个文件
+     *
+     * @param fileName 要删除的文件的文件名
+     * @return 单个文件删除成功返回true，否则返回false
+     */
+    public static boolean deleteFile(String fileName) {
+        File file = new File(fileName);
+        // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
+        if (file.exists() && file.isFile()) {
+            if (file.delete()) {
+                System.out.println("删除单个文件" + fileName + "成功！");
+                return true;
+            } else {
+                System.out.println("删除单个文件" + fileName + "失败！");
+                return false;
+            }
+        } else {
+            System.out.println("删除单个文件失败：" + fileName + "不存在！");
+            return false;
+        }
+    }
+
+    /**
+     * 删除目录及目录下的文件
+     *
+     * @param dir 要删除的目录的文件路径
+     * @return 目录删除成功返回true，否则返回false
+     */
+    public static boolean deleteDirectory(String dir) {
+        // 如果dir不以文件分隔符结尾，自动添加文件分隔符
+        if (!dir.endsWith(File.separator))
+            dir = dir + File.separator;
+        File dirFile = new File(dir);
+        // 如果dir对应的文件不存在，或者不是一个目录，则退出
+        if ((!dirFile.exists()) || (!dirFile.isDirectory())) {
+            System.out.println("删除目录失败：" + dir + "不存在！");
+            return false;
+        }
+        boolean flag = true;
+        // 删除文件夹中的所有文件包括子目录
+        File[] files = dirFile.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            // 删除子文件
+            if (files[i].isFile()) {
+                flag = DeleteFileUtil.deleteFile(files[i].getAbsolutePath());
+                if (!flag)
+                    break;
+            }
+            // 删除子目录
+            else if (files[i].isDirectory()) {
+                flag = DeleteFileUtil.deleteDirectory(files[i]
+                        .getAbsolutePath());
+                if (!flag)
+                    break;
+            }
+        }
+        if (!flag) {
+            System.out.println("删除目录失败！");
+            return false;
+        }
+        // 删除当前目录
+        if (dirFile.delete()) {
+            System.out.println("删除目录" + dir + "成功！");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+}

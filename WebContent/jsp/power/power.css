@@ -1,0 +1,44 @@
+.body{
+	background-color: #352652;
+}
+.topage{
+	margin:10px;
+	width:1220px;
+	height:50px;
+	background-color: #003366
+}
+.topContent{
+	margin: 5px;
+    color: #CCCCFF;
+    font-size: 23px;
+}
+.content{
+	display: flex;
+	flex-direction: row;
+}
+.buttonColumn{
+	display: flex;
+	flex-direction:column;
+} 
+.contentLeft{
+	margin:10px;
+	width:400px;
+	height:840px;
+	background-color: #003366
+}
+.contentRight{
+	margin:10px;
+	width:800px;
+	height:840px;
+	background-color: #003366
+}
+.powerAction{
+	float:left;
+	margin: 5px;
+    color: #c6b9f7;
+    font-size: 20px;
+}
+.iframeStyle{
+	height:500px;
+	width:100%;
+}

@@ -1,0 +1,10 @@
+eclipse.preferences.version=1
+encoding//WebContent/WEB-INF/lib=GBK
+encoding//WebContent/WEB-INF/lib/activation-1.1.jar=UTF-16BE
+encoding//WebContent/WEB-INF/lib/spring-orm-5.0.1.RELEASE.jar=UTF-8
+encoding//WebContent/jsp/newTest.jsp=UTF-8
+encoding//WebContent/jsp/success.jsp=UTF-8
+encoding//src/com/service/AppService.java=UTF-8
+encoding//src/com/test/HttpClientTestAPP.java=UTF-8
+encoding//src/cyh.properties=UTF-8
+encoding/<project>=UTF-8

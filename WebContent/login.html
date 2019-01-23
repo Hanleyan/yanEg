@@ -1,0 +1,71 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Person Credit</title>
+    <!-- <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/demo.css">
+    <link rel="stylesheet" type="text/css" href="css/component.css"> -->
+     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+
+</head>
+
+<body>
+<div class="container demo-1">
+    <div class="content">
+        <div id="large-header" class="large-header">
+        
+            <div class="logo_box">
+                <h1>Person Credit</h1>
+                <form name="f" method="post">
+                    <div class="input_outer">
+                        <span class="u_user"></span>
+                        <input  class="text" id="userName"  type="text" placeholder="用户名">
+                    </div>
+                    <div class="input_outer">
+                        <span class="us_uer"></span>
+                        <input class="text" id="passWord" value="" type="password" placeholder="请输入密码">
+                    </div>
+                    <div class="mb2"><button class="act-but submit" id="logins" onclick="login()">登录</button></div>  
+                </form>
+            </div>
+
+            <div class="foots">
+            
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+<script>
+
+	/* $("#logins").click(function () { */
+		
+	function login() {
+   	 
+   	 var passWord=$("#passWord").val();
+   	 var userName=$("#userName").val();
+       /* var userName = document.getElementById("userName").value;
+       var passWord = document.getElementById("passWord").value; */
+      
+       $.ajax({
+           url:"http://192.168.1.164:8080/yanEg/login.do",
+           type:"POST",
+           data: {"userName":userName,"passWord":passWord},
+           success:function(data){
+               alert(data);
+           },
+           error: function(data){
+               alert('error!');
+           }
+
+       });
+    }
+	
+	 
+     
+</script>
+</html>
