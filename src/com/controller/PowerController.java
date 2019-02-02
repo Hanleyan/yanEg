@@ -91,7 +91,9 @@ public class PowerController extends BaseController{
     	}else if("updatePositionPower".equals(actionPath)){
     		List<Position> positionList = powerService.queryPowerForEveryPosition();
     		map.put("positionList", positionList);
-    	}  
+    	}
+    	
+    
     	
     	return "power/"+actionPath;
     }

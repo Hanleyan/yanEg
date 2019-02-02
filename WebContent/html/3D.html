@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>3D</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 200px auto;
+            transform-style: preserve-3d; /* flat: 子元素将不保留其 3D 位置。preserve-3d: 子元素将保留其 3D 位置。 */
+            animation: run 3s linear infinite;
+            animation-fill-mode: none; /* 属性规定动画在播放之前或之后，其动画效果是否可见。 */
+        }
+
+        /* forwards: 当动画完成后，保持最后一个属性值（在最后一个关键帧中定义）。
+        backwards: 在 animation-delay 所指定的一段时间内，在动画显示之前，应用开始属性值（在第一个关键帧中定义）。
+        both: 向前和向后填充模式都被应用。 */
+
+        ul li {
+            position: absolute;
+            list-style: none;
+            left: 0;
+            top: 0;
+            width: 200px;
+            height: 200px;
+            opacity: 0.5; /* 透明度 */
+        }
+
+        ul li:first-child {
+            transform: translateY(100px) rotateX(90deg);
+            background: red;
+        }
+
+        ul li:nth-child(2) {
+            transform: translateX(100px) rotateY(90deg);
+            background: blue;
+        }
+
+        ul li:nth-child(3) {
+            transform: translateY(-100px) rotateX(90deg);
+            background: green;
+        }
+
+        ul li:nth-child(4) {
+            transform: translateX(-100px) rotateY(90deg);
+            background: yellow;
+        }
+
+        ul li:nth-child(5) {
+            transform: translateZ(-100px);
+            background: orange;
+        }
+
+        ul li:last-child {
+            transform: translateZ(100px);
+            background: pink;
+        }
+
+        @keyframes run {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg);
+            }
+            100% {
+                transform: rotateX(360deg) rotateY(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+<ul>
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+    <li>6</li>
+</ul>
+</body>
+</html>

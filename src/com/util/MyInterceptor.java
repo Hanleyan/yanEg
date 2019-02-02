@@ -52,7 +52,7 @@ public class MyInterceptor extends BaseController implements HandlerInterceptor 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         logger.info("进入 postHandle 方法..." + request.getRequestURL().toString() + "," + request.getRequestURI());
-        modelAndView.addObject("please", "请先登入");
+      
         
         
     }
