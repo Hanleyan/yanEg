@@ -11,11 +11,12 @@ public class Thread1Test {
 		 * 实际上所有的多线程代码执行顺序都是不确定的，每次执行的结果都是随机的。
 		 */
 		System.out.println(Thread.currentThread().getName()+ "主线程运行 开始");
-		Thread1 t1 = new Thread1("A");
+		//Thread1 t1 = new Thread1("A");
+		new Thread1("A").start();
 		Thread1 t2 = new Thread1("B");
 		Thread1 t3 = new Thread1("C");
 		
-		t1.start();
+		//t1.start();
 		t2.start();
 		t3.start();
 		System.out.println(Thread.currentThread().getName()+ "主线程运行 结束");

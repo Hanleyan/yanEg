@@ -14,6 +14,7 @@ public class Thread2Test {
 		new Thread(new Thread2("E")).start();
 		new Thread(new Thread2("F")).start();
 		
+		
 		//Thread1中线程也一起跑
 		Thread1 t1 = new Thread1("A");
 		Thread1 t2 = new Thread1("B");
