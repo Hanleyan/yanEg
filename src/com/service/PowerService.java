@@ -16,6 +16,7 @@ import org.springframework.ui.ModelMap;
 import com.alibaba.fastjson.JSON;
 import com.dao.inter.ISuperDao;
 import com.entity.power.Action;
+import com.entity.power.ActionType;
 import com.entity.power.Position;
 import com.entity.power.PositionWithActionInfo;
 import com.entity.power.UserWithActionInfo;
@@ -58,7 +59,17 @@ public class PowerService {
     		m.put("position",p);
     		//权限
     		List<Action> actionList= queryUserActionListByUserId(u.getId());
-    
+    		
+    		//权限分类
+    		List<ActionType> actionTypeList = queryActionTypeList();
+    		for (ActionType actionType : actionTypeList) {
+				for (Action action : actionList) {
+					if(actionType.getId() == action.getActionTypeId()){
+						actionType.setAction(action);
+					}
+				}
+			}
+    		m.put("actionTypeList", actionTypeList);
     		m.put("actionList", actionList);
     		m.put("user",u);
     		m.put("actionListSize", actionList.size());
@@ -72,7 +83,16 @@ public class PowerService {
     /***************************用户操作*******************************/
     
     /*************************  各种查询方法     *******************************************************/
-
+    /**
+     * 获取权限分类List
+     */
+    @SuppressWarnings("unchecked")
+    public List<ActionType> queryActionTypeList(){
+		String hql="from ActionType where 1=1 and delFlag = false ";
+		List<ActionType> atList = (List<ActionType>)superDao.getObjectList(hql);
+		return atList; 
+    }
+    
     /**
      * 用户userId查 职位positionId
      */

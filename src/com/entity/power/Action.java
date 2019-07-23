@@ -33,6 +33,9 @@ public class Action implements Serializable{
     @Column(name="action_path", columnDefinition="varchar (50)")
     private String actionPath;//操作权限 jsp路径
     
+    @Column(name="action_type_id", columnDefinition="int (5)")
+    private Integer actionTypeId;//权限分类id
+    
     @Column(name="create_time", columnDefinition="datetime",updatable=false)
     private Date createTime;//创建日期
 
@@ -88,6 +91,14 @@ public class Action implements Serializable{
 
 	public void setActionPath(String actionPath) {
 		this.actionPath = actionPath;
+	}
+
+	public Integer getActionTypeId() {
+		return actionTypeId;
+	}
+
+	public void setActionTypeId(Integer actionTypeId) {
+		this.actionTypeId = actionTypeId;
 	}
     
     

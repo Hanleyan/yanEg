@@ -15,6 +15,12 @@
 <script src="<%=basePath%>js/jquery-3.3.1.min.js"></script>
 <link rel="stylesheet" type="text/css"
 	href="<%=basePath%>jsp/power/power.css">
+<style type="text/css">
+	ul li{
+	list-style: none;
+
+}
+</style>
 </head>
 <body class="body">
 	<%-- ${position}
@@ -26,15 +32,32 @@ ${actionList} --%>
 
 	<div class="content">
 		<div class="contentLeft cl"> <!-- class="contentLeft"  style="margin:10px;width:400px;height:1004px;background-color: #003366" -->  <!-- style="height:1004px;" -->
-			<div class="topContent">您的权限(${sessionScope.USER_RIGHT_SIZE})</div>
+			<div class="topContent">您可以操作的权限(${sessionScope.USER_RIGHT_SIZE})</div>
 			<input type="hidden" id="actionListSize" value=${sessionScope.USER_RIGHT_SIZE}>
-			<div class="buttonColumn">
-				<%-- <c:forEach items="${actionList}" var="aList" varStatus="num"> --%>
-				<c:forEach items="${sessionScope.USER_RIGHT}" var="aList" varStatus="num">
-					<%-- <a href="javascript:void(0)" class="powerAction" onclick="caozuo(${user.id},${aList.id},'${aList.actionPath}')"> (${num.index+1})  ${aList.action} </a>  --%>
+			
+			<ul class="buttonColumn">
+				<c:forEach items="${actionTypeList}" var="atList" varStatus="num">
+					<li>
+						<%-- <a href="" class="powerAction"> (${num.index+1})  ${atList.actionTypeName} </a>  --%>
+						
+						<a class="powerAction" href="" onclick="click()">${atList.actionTypeName}<span class="fa arrow"></span></a>
+		                <ul class="ul">
+		                    <li>
+		                        <a id="orderPage" href="<%=basePath%>order/toOrderList.do">预审批订单</a>
+		                    </li>
+		                    <li>
+		                        <a  id="loanBusinessQuery" href="<%=basePath%>order/toLoadOrderList.do">进件订单</a>
+		                    </li>
+		                </ul>
+					</li>
+				</c:forEach>
+				
+				<%-- <c:forEach items="${sessionScope.USER_RIGHT}" var="aList" varStatus="num">
 					<a href="<%=basePath%>power/entryTakeAction.do?userId=${user.id}&actionId=${aList.id}&actionPath=${aList.actionPath}" class="powerAction"> (${num.index+1})  ${aList.action} </a> 
 				</c:forEach>
-			</div>
+				 --%>
+			</ul>
+			
 		</div>
 
 		<div class="contentRight cl">
@@ -53,6 +76,16 @@ ${actionList} --%>
 	if(listSize > 22){
 		var higt = listSize * 38 + "px";
 		$(".cl").css({ "height": higt});   
+	}
+	
+	$(".ul").hide();
+	
+	function click(){
+		/* $('#txtName').next().attr('id') */
+		var a = $(this);
+		console.info(a);
+		alert(a);
+		$(this).next().attr('ul').show();
 	}
 
 	<%-- function caozuo(userId,actionId,actionPath){
