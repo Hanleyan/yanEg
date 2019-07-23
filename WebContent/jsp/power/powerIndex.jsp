@@ -13,14 +13,25 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Insert title here</title>
 <script src="<%=basePath%>js/jquery-3.3.1.min.js"></script>
-<link rel="stylesheet" type="text/css"
-	href="<%=basePath%>jsp/power/power.css">
-<style type="text/css">
-	ul li{
-	list-style: none;
+<link rel="stylesheet" type="text/css" href="<%=basePath%>jsp/power/power.css">
 
-}
-</style>
+	<link rel="stylesheet" href="<%=basePath%>jquery-treeview-master/jquery.treeview.css" type="text/css"/>
+	<script src="<%=basePath%>jquery-treeview-master/jquery.treeview.js" type="text/javascript"></script>
+	<script type="text/javascript">
+        $(document).ready(function(){
+            $("#treeview").treeview({
+                toggle: function() {
+                    console.log("%s was toggled.", $(this).find(">span").text());
+                }
+            });
+        });
+	</script>
+	<style type="text/css">
+		ul li{
+		list-style: none;
+
+	}
+	</style>
 </head>
 <body class="body">
 	<%-- ${position}
@@ -35,28 +46,32 @@ ${actionList} --%>
 			<div class="topContent">您可以操作的权限(${sessionScope.USER_RIGHT_SIZE})</div>
 			<input type="hidden" id="actionListSize" value=${sessionScope.USER_RIGHT_SIZE}>
 			
-			<ul class="buttonColumn">
-				<c:forEach items="${actionTypeList}" var="atList" varStatus="num">
-					<li>
-						<%-- <a href="" class="powerAction"> (${num.index+1})  ${atList.actionTypeName} </a>  --%>
-						
-						<a class="powerAction" href="" onclick="click()">${atList.actionTypeName}<span class="fa arrow"></span></a>
-		                <ul class="ul">
-		                    <li>
-		                        <a id="orderPage" href="<%=basePath%>order/toOrderList.do">预审批订单</a>
-		                    </li>
-		                    <li>
-		                        <a  id="loanBusinessQuery" href="<%=basePath%>order/toLoadOrderList.do">进件订单</a>
-		                    </li>
-		                </ul>
-					</li>
-				</c:forEach>
-				
-				<%-- <c:forEach items="${sessionScope.USER_RIGHT}" var="aList" varStatus="num">
-					<a href="<%=basePath%>power/entryTakeAction.do?userId=${user.id}&actionId=${aList.id}&actionPath=${aList.actionPath}" class="powerAction"> (${num.index+1})  ${aList.action} </a> 
-				</c:forEach>
-				 --%>
-			</ul>
+			<div id="main">
+				<ul class="filetree" id="treeview" style="font-size: 1.2rem" ><%--class="buttonColumn"--%>
+					<c:forEach items="${sessionScope.USER_RIGHT_TYPE}" var="atList" varStatus="num">
+						<li>
+								<%-- <a href="" class="powerAction"> (${num.index+1})  ${atList.actionTypeName} </a>  --%>
+
+							<span class="folder" style="margin: 0 0 5px 2px;">${atList.actionTypeName}</span><%--class="powerAction"--%>
+							<ul style="background-color: rgba(3, 255, 194, 0.1);"><%--class="ul" id="at_${num.index+1}"  display: none;--%>
+								<c:forEach items="${atList.actionList}" var="act">
+									<li>
+										<span class="file" style="font-size: 1rem;">
+											<a href="<%=basePath%>power/entryTakeAction.do?userId=${sessionScope.USER_CONTEXT.id}&actionId=${act.id}&actionPath=${act.actionPath}" style="color: rgba(160, 199, 212, 0.95);">${act.action}</a>
+										</span>
+
+									</li>
+								</c:forEach>
+							</ul>
+						</li>
+					</c:forEach>
+
+					<%-- <c:forEach items="${sessionScope.USER_RIGHT}" var="aList" varStatus="num">
+                        <a href="<%=basePath%>power/entryTakeAction.do?userId=${user.id}&actionId=${aList.id}&actionPath=${aList.actionPath}" class="powerAction"> (${num.index+1})  ${aList.action} </a>
+                    </c:forEach>
+                     --%>
+				</ul>
+			</div>
 			
 		</div>
 
@@ -75,18 +90,17 @@ ${actionList} --%>
 	var listSize = $("#actionListSize").val(); 
 	if(listSize > 22){
 		var higt = listSize * 38 + "px";
-		$(".cl").css({ "height": higt});   
+		$(".cl").css({ "height": higt});
 	}
 	
-	$(".ul").hide();
+	/*$(".ul").hide();*/
 	
-	function click(){
-		/* $('#txtName').next().attr('id') */
-		var a = $(this);
-		console.info(a);
-		alert(a);
-		$(this).next().attr('ul').show();
-	}
+	/*function atType(at_id){
+		alert(at_id);
+		var str = $("#at_"+at_id).html();
+        console.info(str);
+        $("#at_"+at_id).show();
+	}*/
 
 	<%-- function caozuo(userId,actionId,actionPath){
 		$(".powerCaozuo").empty();
