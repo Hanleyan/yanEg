@@ -1,10 +1,14 @@
 package com.util;
 
-import org.springframework.util.Assert;
-
-import com.entity.power.Users;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.util.Assert;
+
+import com.entity.power.Action;
+import com.entity.power.Position;
+import com.entity.power.Users;
 
 
 /**
@@ -44,19 +48,53 @@ public class BaseController {
 	}
 	
 	/**
-	 * 保存用户权限到Session中
+	 * 获取保存在Session中的用户职位对象
+	 * 
+	 * @param request
+	 * @return
+	 */
+	protected Position getSessionUserPosition(HttpServletRequest request) {
+		return (Position) request.getSession().getAttribute(
+				CommonConstant.USER_POSITION);
+	}
+   
+	/**
+	 * 保存用户职位对象到Session中
 	 * @param request
 	 * @param DBUser
 	 */
-	/*protected List<ActionGroups> getUserRight(HttpServletRequest request) {
-		return (List<ActionGroups>) request.getSession().getAttribute(CommonConstant.USER_RIGHT);
-	}*/
+	protected void setSessionUserPosition(HttpServletRequest request,Position position) {
+		request.getSession().setAttribute(CommonConstant.USER_POSITION,
+				position);
+	}
 	
-	/*protected void setUserRight(HttpServletRequest request,List<ActionGroups> list) {
+	/**
+	 * 保存用户权限List到Session中
+	 * @param request
+	 * @param List<Action>
+	 */
+	@SuppressWarnings("unchecked")
+	protected List<Action> getUserRight(HttpServletRequest request) {
+		return (List<Action>) request.getSession().getAttribute(CommonConstant.USER_RIGHT);
+	}
+	
+	protected void setUserRight(HttpServletRequest request,List<Action> list) {
 		request.getSession().setAttribute(CommonConstant.USER_RIGHT,
 				list);
-	}*/
+	}
+	/**
+	 * 保存用户权限数量到Session中
+	 * @param request
+	 * @param Integer
+	 */
+	protected Integer getUserRightSize(HttpServletRequest request) {
+		return (Integer) request.getSession().getAttribute(CommonConstant.USER_RIGHT_SIZE);
+	}
 	
+	protected void setUserRightSize(HttpServletRequest request,Integer userRightSize) {
+		request.getSession().setAttribute(CommonConstant.USER_RIGHT_SIZE,
+				userRightSize);
+	}
 	
 
 	/**

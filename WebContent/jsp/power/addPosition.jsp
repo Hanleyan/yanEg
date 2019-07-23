@@ -17,21 +17,24 @@
 	href="<%=basePath%>jsp/power/power.css">
 </head>
 <body>
-<div>
-	<div class="content">
-		<div style="margin:5px;width:400px;height:440px;background-color: #1679dc">
-			<p style='margin: 20px 0px 0px 218px;color: #d1cff1;font-size: 23px;'>请添加职位：</p>
-			<!-- <p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'>请添加权限页面jsp名：</p> -->
-		</div>	
-		<div style="margin:5px;width:400px;height:440px;background-color: #58c566">
-			<input type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='position' id='position'>
-			<!-- <input type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='actionPath' id='actionPath'> -->
+<jsp:include page="powerIndex.jsp" flush="true"/>
+	<div class="newCaozuo">
+		<div>
+			<div class="content">
+				<div style="margin:5px;width:400px;height:440px;background-color: #1679dc">
+					<p style='margin: 20px 0px 0px 218px;color: #d1cff1;font-size: 23px;'>请添加职位：</p>
+					<!-- <p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'>请添加权限页面jsp名：</p> -->
+				</div>	
+				<div style="margin:5px;width:400px;height:440px;background-color: #58c566">
+					<input type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='position' id='position'>
+					<!-- <input type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='actionPath' id='actionPath'> -->
+				</div>
+			</div>
+			<div >
+				<button style="margin: 5px;color: #7f62ea;font-size: 20px; background-color: #f5f0f7;width: 130px;" onclick="submitCaozuo(${userId},${actionId})">确定</button>
+			</div> 
 		</div>
 	</div>
-	<div >
-		<button style="float:left;margin: 5px;color: #7f62ea;font-size: 20px; background-color: #f5f0f7;margin: 5px 0 0 640px;width: 130px;" onclick="submitCaozuo(${userId},${actionId})">确定</button>
-	</div> 
-</div>
 
 
 <script type="text/javascript">

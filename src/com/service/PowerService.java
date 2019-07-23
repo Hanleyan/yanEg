@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,6 @@ public class PowerService {
     		log.info("username:"+username+" 他的权限："+JSON.toJSONString(actionList));
     		
     	}
-    	log.info("username：来了 老弟");
     	//json.setResult(m);
     
     }
@@ -230,12 +230,9 @@ public class PowerService {
 		
     }
     /**
-     * 查看所有用户及用户的权限
+     * 查看所有权限及用户的权限
      */
     public void showAllPowerToUserForUpdate(ModelMap m ,Integer userId){
-    	/*String hql="from Action where 1=1 and delFlag = false";
-    	@SuppressWarnings("unchecked")
-		List<Action> allActionList = (List<Action>)superDao.getObjectList(hql);*/
     	List<Action> allActionList = showAllPower();
     	m.put("allActionList", allActionList);//所有权限
     	
@@ -252,6 +249,14 @@ public class PowerService {
      */
     public Boolean powerAddAction(int userId,int actionId,String action,String actionPath){
         Boolean flag = false;
+        //判断action是否为空
+        if(StringUtils.isEmpty(action)){
+        	return flag;
+        }
+        //判断actionPath是否为空
+        if(StringUtils.isEmpty(actionPath)){
+        	return flag;
+        }
         //查看此人有没有操作这个的权限
         Boolean bool = isPowerToUserWithAction(userId,actionId);
         if(bool){

@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
-    pageEncoding="utf-8"%>
+	pageEncoding="utf-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%
@@ -18,28 +18,35 @@
 	href="<%=basePath%>jsp/power/power.css">
 </head>
 <body>
-<div style="background-color: #5c7324">
-	<div class="content">
-		<div style="margin:5px;width:800px;height:2000px;background-color: #05101d">
-			<p style='margin: 20px 0px 0px 340px;color: #d1cff1;font-size: 23px;'>${position}的权限(${positionActListSize})</p>
-			<div >
-				<button style="float:left;color: #7f62ea;font-size: 20px; background-color: #f5f0f7;margin: 5px 0 0 640px;width: 100px;" onclick="submitCaozuo(${userId},${actionId},${positionId},'${position}')">确定修改</button>
+<jsp:include page="powerIndex.jsp" flush="true"/>
+	<div class="newCaozuo">
+			
+			<div class="content">
+				<div style="margin: 5px; width: 800px; height: 2000px; background-color: #05101d">
+					<p style='margin: 20px 0px 0px 340px; color: #d1cff1; font-size: 23px;'>${position}的权限(${positionActListSize})</p>
+					<div>
+						<button style=" color: #7f62ea; font-size: 20px;  margin: 5px 0 0 640px; width: 100px;"
+							onclick="submitCaozuo(${userId},${actionId},${positionId},'${position}')">确定修改</button><!-- float: left;background-color: #f5f0f7; -->
+					</div>
+	
+					<p style='margin: 20px 0px 0px 117px; color: #d1cff1; font-size: 23px;'>
+						<input type="checkbox" id="checkboxAll" name="checkboxAll">全选/全不选
+					</p>
+					<c:forEach items="${allActionList}" var="list" varStatus="num">
+						<p style='margin: 20px 0px 0px 117px; color: #d1cff1; font-size: 23px;'>
+							<input type="checkbox" id="checkbox" name="checkbox"
+								value="${list.id}"
+								<c:forEach items="${positionActList}" var="ulist"><c:if test="${list.id == ulist.id}">checked</c:if></c:forEach>>
+							<span style="font-size: 15px; color: #b0d07d;">(${num.index+1})</span>${list.action}
+						</p>
+					</c:forEach>
+	
+				</div>
 			</div>
-			
-				<p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'><input type="checkbox" id="checkboxAll" name="checkboxAll">全选/全不选</p>
-			<c:forEach items="${allActionList}" var="list" varStatus="num">
-				<p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'>
-					<input type="checkbox" id="checkbox" name="checkbox" value="${list.id}" <c:forEach items="${positionActList}" var="ulist"><c:if test="${list.id == ulist.id}">checked</c:if></c:forEach>>
-					<span style="font-size:15px;color: #b0d07d;">(${num.index+1})</span>${list.action}
-				</p>
-			</c:forEach>
-			
-		</div>	
+		
 	</div>
-	  
-</div>
 
-
+</body>
 <script type="text/javascript">
 
     //全选 (要用input中name属性)
@@ -84,5 +91,5 @@
 		}
 	}
 </script>
-</body>
+
 </html>

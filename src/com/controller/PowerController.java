@@ -1,8 +1,6 @@
 package com.controller;
 
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,14 +13,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.alibaba.fastjson.JSON;
+import com.entity.power.Action;
 import com.entity.power.Position;
 import com.entity.power.Users;
 import com.service.PowerService;
 import com.util.BaseController;
-import com.util.EnumMessageCode;
-import com.util.JsonContent;
 
 /**
  * @author hanley
@@ -37,42 +35,37 @@ public class PowerController extends BaseController{
     @Autowired
     private PowerService powerService;
 
-    @RequestMapping("powerLogin.do")
-    //@ResponseBody
-    public String powerLogin(HttpServletRequest request, HttpServletResponse response,ModelMap m , String username,String pwd){  // PrintWriter writer,
+    @SuppressWarnings("unchecked")
+	@RequestMapping("powerLogin.do")
+    @ResponseBody
+    public String powerLogin(HttpServletRequest request, HttpServletResponse response,ModelMap m , PrintWriter writer,String username,String pwd){  // PrintWriter writer,
     	log.info("username："+username+" pwd:"+pwd);
     	Users u =  powerService.login(m,username,pwd);
         log.info("登入用户u："+JSON.toJSONString(u));
-        /*if(b) writer.print("success");
-        else writer.print("用户名或密码error");
-        return null;*/
-        /*if(b) return "success";
-        else return "用户名或密码error";*/
-        if(u != null){
+        if(u != null) {
         	setSessionUser(request, u);
-        	
-        	String url ="";
-        	try {
-				//url =  "redirect:entryPowerIndex.do?username=" +URLEncoder.encode(username,"UTF-8")+"&pwd="+URLEncoder.encode(pwd,"UTF-8");
-				url =  "redirect:entryPowerIndex.do?username="+username+"&pwd="+pwd;
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.error(e,e);
-			}
-        	return url;
-        }else{
-        	m.addAttribute("username", username);
-        	m.addAttribute("pwd", pwd);
-        	m.addAttribute("msg", "用户名或密码error");
-        	return "power/powerLogin";
-        } 
+        	writer.write("success");
+        }else {
+        	writer.write("用户名或密码error");
+        }
+        return null;
 
     }
     
-    @RequestMapping("entryPowerIndex.do")
-    public String entryPowerIndex(HttpServletRequest request, HttpServletResponse response, PrintWriter writer,ModelMap m , String username,String pwd){
-    	log.info("username："+username+" pwd:"+pwd);
-    	powerService.entryPowerIndex(m ,username,pwd);
+    @SuppressWarnings("unchecked")
+	@RequestMapping("entryPowerIndex.do")
+    public String entryPowerIndex(HttpServletRequest request, HttpServletResponse response, PrintWriter writer,ModelMap m){
+    	Users u = getSessionUser(request);
+    	log.info("username："+u.getUsername()+" pwd:"+u.getPassword());
+    	powerService.entryPowerIndex(m ,u.getUsername(),u.getPassword());
+    	
+    	//用户职位加到session中
+    	setSessionUserPosition(request,(Position)m.get("position"));
+    	//用户权限加到session中
+    	setUserRight(request,(List<Action>)m.get("actionList"));
+    	//用户权限数量加到session中
+    	setUserRightSize(request,(Integer)m.get("actionListSize"));
+    	
     	return "power/powerIndex";
     }
     
@@ -103,13 +96,21 @@ public class PowerController extends BaseController{
     	log.info("showAllPowerToUserForUpdate --  userName："+userName);
 
     	powerService.showAllPowerToUserForUpdate(map,execUserId);
-    	map.put("userId", userId);
+    	map.put("userId", userId);//执行者(操作员)userId
     	map.put("actionId", actionId);
     	map.put("execUserId", execUserId);//被执行者的userId
     	map.put("userName", userName);
     	return "power/showAllPowerToUserForUpdate";
     }
- 
+   
+    @RequestMapping("showUserDetail.do")
+    public String showUserDetail(HttpServletRequest request,ModelMap map,Integer execUserId,String userName) throws Exception{
+    	log.info("showUserDetail --  userName："+userName);
+
+    	powerService.showAllPowerToUserForUpdate(map,execUserId);
+    	map.put("userName", userName);
+    	return "power/showUserDetail";
+    }
     @RequestMapping("powerAddAction.do")
     @ResponseBody
     public void powerAddAction(HttpServletRequest request, HttpServletResponse response, PrintWriter writer,int userId,int actionId,String action,String actionPath){
@@ -118,7 +119,7 @@ public class PowerController extends BaseController{
     	if(b){
     		writer.print("success,Please refresh the page!");
     	}else
-    		writer.print("您没有操作权限");
+    		writer.print("您没有操作权限或输入项为空");
     	
     }
     @RequestMapping("powerAddPosition.do")

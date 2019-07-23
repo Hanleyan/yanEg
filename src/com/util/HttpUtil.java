@@ -10,20 +10,26 @@ import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cilent.httpClientUtil;
 
 public class HttpUtil {
+	private static final Logger log = Logger.getLogger(HttpUtil.class);
 
     private RequestConfig requestConfig = RequestConfig.custom()
             .setSocketTimeout(5*60*1000)
@@ -32,7 +38,7 @@ public class HttpUtil {
             .build();
 
     private static HttpUtil instance = null;
-    private HttpUtil(){}
+    public HttpUtil(){}
     public static HttpUtil getInstance(){
         if (instance == null) {
             instance = new HttpUtil();
@@ -139,5 +145,54 @@ public class HttpUtil {
         }
         return responseContent;
     }
+    
+    /**
+	 * post请求（用于请求json格式的参数）
+	 * @param url
+	 * @param params
+	 * @return
+	 */
+	public String doPost(String url, String params) throws Exception {
+		
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpPost httpPost = new HttpPost(url);// 创建httpPost   
+    	httpPost.setHeader("Accept", "application/json"); 
+    	httpPost.setHeader("Content-Type", "application/json");
+    	String charSet = "UTF-8";
+    	StringEntity entity = new StringEntity(params, charSet);
+    	httpPost.setEntity(entity);        
+        CloseableHttpResponse response = null;
+        
+        try {
+        	
+        	response = httpclient.execute(httpPost);
+            StatusLine status = response.getStatusLine();
+            int state = status.getStatusCode();
+            if (state == HttpStatus.SC_OK) {
+            	HttpEntity responseEntity = response.getEntity();
+            	String jsonString = EntityUtils.toString(responseEntity);
+            	return jsonString;
+            }
+            else{
+				 log.error("请求返回:"+state+"("+url+")");
+			}
+        }
+        finally {
+            if (response != null) {
+                try {
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+				httpclient.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }
+        return null;
+	}
+	
 
 }

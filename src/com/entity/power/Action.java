@@ -1,6 +1,8 @@
 package com.entity.power;
 
 import javax.persistence.*;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -11,9 +13,15 @@ import java.util.Date;
  */
 @Entity
 @Table(name="action")
-public class Action {
+public class Action implements Serializable{
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1298236078181644701L;
+	
+
+	@Id
     @Basic
     @Column(name="id")
     @GeneratedValue(strategy=GenerationType.IDENTITY)

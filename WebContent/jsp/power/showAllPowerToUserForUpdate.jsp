@@ -18,28 +18,26 @@
 	href="<%=basePath%>jsp/power/power.css">
 </head>
 <body>
-<div style="background-color: #5c7324">
-	<div class="content">
-		<div style="margin:5px;width:800px;height:2000px;background-color: #05101d">
-			<p style='margin: 20px 0px 0px 340px;color: #d1cff1;font-size: 23px;'>${userName}的权限(${userActListSize})</p>
-			<div >
-				<button style="float:left;color: #7f62ea;font-size: 20px; background-color: #f5f0f7;margin: 5px 0 0 640px;width: 100px;" onclick="submitCaozuo(${userId},${actionId},${execUserId},'${userName}')">确定修改</button>
-			</div>
-			
-				<p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'><input type="checkbox" id="checkboxAll" name="checkboxAll">全选/全不选</p>
-			<c:forEach items="${allActionList}" var="list" varStatus="num">
-				<p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'>
-					<input type="checkbox" id="checkbox" name="checkbox" value="${list.id}" <c:forEach items="${userActList}" var="ulist"><c:if test="${list.id == ulist.id}">checked</c:if></c:forEach>>
-					<span style="font-size:15px;color: #b0d07d;">(${num.index+1})</span>${list.action}
-				</p>
-			</c:forEach>
-			
-		</div>	
+<jsp:include page="powerIndex.jsp" flush="true"/>
+	<div class="newCaozuo">
+		<div class="content">
+			<div style="margin:5px;width:800px;height:2000px;background-color: #05101d">
+				<p style='margin: 20px 0px 0px 340px;color: #d1cff1;font-size: 23px;'>${userName}的权限(${userActListSize})</p>
+				<div >
+					<button style="color: #7f62ea;font-size: 20px; margin: 5px 0 0 640px;width: 100px;" onclick="submitCaozuo(${userId},${actionId},${execUserId},'${userName}')">确定修改</button>
+				</div><!-- float:left; background-color: #f5f0f7;-->
+				
+					<p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'><input type="checkbox" id="checkboxAll" name="checkboxAll">全选/全不选</p>
+				<c:forEach items="${allActionList}" var="list" varStatus="num">
+					<p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'>
+						<input type="checkbox" id="checkbox" name="checkbox" value="${list.id}" <c:forEach items="${userActList}" var="ulist"><c:if test="${list.id == ulist.id}">checked</c:if></c:forEach>>
+						<span style="font-size:15px;color: #b0d07d;">(${num.index+1})</span>${list.action}
+					</p>
+				</c:forEach>
+				
+			</div>	
+		</div>
 	</div>
-	  
-</div>
-
-
 <script type="text/javascript">
 
     //全选 (要用input中name属性)

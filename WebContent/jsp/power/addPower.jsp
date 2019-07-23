@@ -18,43 +18,57 @@
 </head>
 <body>
 <div>
-	<div class="content">
-		<div style="margin:5px;width:400px;height:440px;background-color: #1679dc">
-			<p style='margin: 20px 0px 0px 218px;color: #d1cff1;font-size: 23px;'>请添加权限：</p>
-			<p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'>请添加权限页面jsp名：</p>
-		</div>	
-		<div style="margin:5px;width:400px;height:440px;background-color: #58c566">
-			<input type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='action' id='action'>
-			<input type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='actionPath' id='actionPath'>
+<jsp:include page="powerIndex.jsp" flush="true"/>
+	<div class="newCaozuo">
+		<div class="content" >
+			<div style="margin:5px;width:400px;height:440px;background-color: #1679dc">
+				<p style='margin: 20px 0px 0px 218px;color: #d1cff1;font-size: 23px;'>请添加权限：</p>
+				<p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'>请添加权限页面jsp名：</p>
+			</div>	
+			<div style="margin:5px;width:400px;height:440px;background-color: #58c566">
+				<input type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='action' id='action'>
+				<span id="need1" style="color: red;font-size: 3px;"></span>
+				<input type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='actionPath' id='actionPath'>
+				<span id="need2" style="color: red;font-size: 3px;"></span>
+			</div>
 		</div>
-	</div>
-	<div >
-		<button style="float:left;margin: 5px;color: #7f62ea;font-size: 20px; background-color: #f5f0f7;margin: 5px 0 0 640px;width: 130px;" onclick="submitCaozuo(${userId},${actionId})">确定</button>
+		<div>
+			<button type="button" style="margin: 5px;color: #7f62ea;font-size: 20px; background-color: #f5f0f7;width: 130px;" onclick="submitCaozuo(${userId},${actionId})">确定</button>
+		</div>
 	</div> 
 </div>
 
 
 <script type="text/javascript">
-function submitCaozuo(userId,actionId){
-	var action = $("#action").val();
-	var actionPath = $("#actionPath").val();
-	
-     $.ajax({
-  	   	 url:"<%=basePath%>power/powerAddAction.do",
-         type:"POST",
-         data: {"userId":userId,"actionId":actionId,"action":action,"actionPath":actionPath},
-         
-         success:function(data){
-        	 alert(data);
-             window.location.reload();
-           },
-			error : function(data) {
-				alert('error!');
-			}
 
-		});
+	function submitCaozuo(userId,actionId){
+		var action = $("#action").val();
+		var actionPath = $("#actionPath").val();
+		
+		if(action == null || action ==""){
+	 		 $("#need1").html("*必填项");
+	 		 return;
+	 	 }
+		if(actionPath == null || actionPath ==""){
+			 $("#need2").html("*必填项");
+			 return;
+		 }
+	     $.ajax({
+	  	   	 url:"<%=basePath%>power/powerAddAction.do",
+	         type:"POST",
+	         data: {"userId":userId,"actionId":actionId,"action":action,"actionPath":actionPath},
+	         
+	         success:function(data){
+	        	 alert(data);
+	             window.location.reload();
+	           },
+				error : function(data) {
+					alert('error!');
+				}
 	
-}
+			});
+		
+	}
 </script>
 </body>
 </html>
