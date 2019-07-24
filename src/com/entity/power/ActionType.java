@@ -1,6 +1,7 @@
 package com.entity.power;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -40,7 +41,7 @@ public class ActionType {
     private Boolean delFlag;// 是否删除 true 删除  false 未删除  数据库  1 删除 0 未删除
     
     @Transient
-    private Action action;
+    private List<Action> actionList;
 
 	public Integer getId() {
 		return id;
@@ -82,13 +83,11 @@ public class ActionType {
 		this.delFlag = delFlag;
 	}
 
-	public Action getAction() {
-		return action;
+	public List<Action> getActionList() {
+		return actionList;
 	}
 
-	public void setAction(Action action) {
-		this.action = action;
+	public void setActionList(List<Action> actionList) {
+		this.actionList = actionList;
 	}
-    
-    
 }

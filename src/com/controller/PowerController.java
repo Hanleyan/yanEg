@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.entity.power.ActionType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,9 @@ public class PowerController extends BaseController{
     	setSessionUserPosition(request,(Position)m.get("position"));
     	//用户权限加到session中
     	setUserRight(request,(List<Action>)m.get("actionList"));
+		//用户权限分类加到session中
+		setUserRightType(request,(List<ActionType>)m.get("actionTypeList"));
+
     	//用户权限数量加到session中
     	setUserRightSize(request,(Integer)m.get("actionListSize"));
     	

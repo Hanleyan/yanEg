@@ -63,11 +63,13 @@ public class PowerService {
     		//权限分类
     		List<ActionType> actionTypeList = queryActionTypeList();
     		for (ActionType actionType : actionTypeList) {
+				List<Action> acList = new ArrayList<Action>();
 				for (Action action : actionList) {
-					if(actionType.getId() == action.getActionTypeId()){
-						actionType.setAction(action);
+					if(actionType.getId().equals(action.getActionTypeId())){
+						acList.add(action);
 					}
 				}
+				actionType.setActionList(acList);
 			}
     		m.put("actionTypeList", actionTypeList);
     		m.put("actionList", actionList);

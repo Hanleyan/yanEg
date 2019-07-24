@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.entity.power.ActionType;
 import org.springframework.util.Assert;
 
 import com.entity.power.Action;
@@ -61,7 +62,6 @@ public class BaseController {
 	/**
 	 * 保存用户职位对象到Session中
 	 * @param request
-	 * @param DBUser
 	 */
 	protected void setSessionUserPosition(HttpServletRequest request,Position position) {
 		request.getSession().setAttribute(CommonConstant.USER_POSITION,
@@ -71,7 +71,6 @@ public class BaseController {
 	/**
 	 * 保存用户权限List到Session中
 	 * @param request
-	 * @param List<Action>
 	 */
 	@SuppressWarnings("unchecked")
 	protected List<Action> getUserRight(HttpServletRequest request) {
@@ -82,10 +81,23 @@ public class BaseController {
 		request.getSession().setAttribute(CommonConstant.USER_RIGHT,
 				list);
 	}
+
+	/**
+	 * 保存用户权限分类List到Session中
+	 * @param request
+	 */
+	@SuppressWarnings("unchecked")
+	protected List<ActionType> getUserRightType(HttpServletRequest request) {
+		return (List<ActionType>) request.getSession().getAttribute(CommonConstant.USER_RIGHT_TYPE);
+	}
+
+	protected void setUserRightType(HttpServletRequest request,List<ActionType> list) {
+		request.getSession().setAttribute(CommonConstant.USER_RIGHT_TYPE,
+				list);
+	}
 	/**
 	 * 保存用户权限数量到Session中
 	 * @param request
-	 * @param Integer
 	 */
 	protected Integer getUserRightSize(HttpServletRequest request) {
 		return (Integer) request.getSession().getAttribute(CommonConstant.USER_RIGHT_SIZE);

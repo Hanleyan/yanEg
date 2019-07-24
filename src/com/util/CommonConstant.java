@@ -22,6 +22,10 @@ public class CommonConstant
     * 用户权限放到Session中的键名称
     */
    public static final String USER_RIGHT = "USER_RIGHT";
+   /**
+    * 用户权限分类放到Session中的键名称
+    */
+   public static final String USER_RIGHT_TYPE = "USER_RIGHT_TYPE";
    
    /**
     * 用户权限数量放到Session中的键名称

@@ -9,7 +9,9 @@
     <!--screen.css不要也可以-->
     <link rel="stylesheet" href="screen.css" type="text/css"/>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+    <%--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>--%>
+    <script src="../../js/jquery-3.3.1.min.js"></script>
+
     <!--jquery.cookie.js不要也可以-->
     <script src="jquery.cookie.js"></script>
     <script src="../jquery.treeview.js" type="text/javascript"></script>
