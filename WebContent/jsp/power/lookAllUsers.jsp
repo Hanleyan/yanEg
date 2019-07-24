@@ -20,7 +20,7 @@
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
 		<div class="content">
-			<div style="margin:5px;width:800px;height:440px;background-color: #05101d">
+			<div style="margin:5px;width:800px;height:440px;background-color: #8e93982e">
 				<p style='margin: 20px 0px 0px 340px;color: #d1cff1;font-size: 23px;'>职员列表</p>
 				<c:forEach items="${userList}" var="list">
 					<p style='margin: 20px 0px 0px 117px;font-size: 23px;'><a href="<%=basePath%>power/showUserDetail.do?execUserId=${list.id}&userName=${list.username}" style="color: #d1cff1;text-decoration:none;" >${list.username}<span style="font-size: 12px;color: #adb5d2;">(${list.position} ${list.actionNum}个权限)</span></a></p>

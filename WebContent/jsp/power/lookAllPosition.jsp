@@ -20,7 +20,7 @@
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
 		<div class="content">
-			<div style="margin:5px;width:800px;height:440px;background-color: #05101d">
+			<div style="margin:5px;width:800px;height:440px;background-color: #8e93982e">
 				<p style='margin: 20px 0px 0px 340px;color: #d1cff1;font-size: 23px;'>职位列表</p>
 				<c:forEach items="${positionList}" var="list">
 					<p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'>${list.position}</p>

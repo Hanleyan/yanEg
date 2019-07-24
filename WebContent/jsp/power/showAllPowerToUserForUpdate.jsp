@@ -21,7 +21,7 @@
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
 		<div class="content">
-			<div style="margin:5px;width:800px;height:2000px;background-color: #05101d">
+			<div style="margin:5px;width:800px;height:2000px;background-color: #8e93982e">
 				<p style='margin: 20px 0px 0px 340px;color: #d1cff1;font-size: 23px;'>${userName}的权限(${userActListSize})</p>
 				<div >
 					<button style="color: #7f62ea;font-size: 20px; margin: 5px 0 0 640px;width: 100px;" onclick="submitCaozuo(${userId},${actionId},${execUserId},'${userName}')">确定修改</button>
