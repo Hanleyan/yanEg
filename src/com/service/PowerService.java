@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.entity.power.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +17,6 @@ import org.springframework.ui.ModelMap;
 
 import com.alibaba.fastjson.JSON;
 import com.dao.inter.ISuperDao;
-import com.entity.power.Action;
-import com.entity.power.ActionType;
-import com.entity.power.Position;
-import com.entity.power.PositionWithActionInfo;
-import com.entity.power.UserWithActionInfo;
-import com.entity.power.UserWithPositionInfo;
-import com.entity.power.Users;
 import com.util.DateUtil;
 
 /**
@@ -62,7 +57,12 @@ public class PowerService {
     		
     		//权限分类
     		List<ActionType> actionTypeList = queryActionTypeList();
-    		for (ActionType actionType : actionTypeList) {
+    		//定义空的一级分类List
+    		List<ActionType> delList = new ArrayList<ActionType>();
+    		//for (ActionType actionType : actionTypeList) {
+    		for (int i = 0;i < actionTypeList.size();i++) {
+    			ActionType actionType = actionTypeList.get(i);
+    			
 				List<Action> acList = new ArrayList<Action>();
 				for (Action action : actionList) {
 					if(actionType.getId().equals(action.getActionTypeId())){
@@ -70,7 +70,15 @@ public class PowerService {
 					}
 				}
 				actionType.setActionList(acList);
+				
+				if(acList.size() == 0){
+					delList.add(actionType);
+				}
 			}
+    		
+    		//移除空的一级分类
+    		actionTypeList.removeAll(delList);
+    		
     		m.put("actionTypeList", actionTypeList);
     		m.put("actionList", actionList);
     		m.put("user",u);
@@ -94,7 +102,15 @@ public class PowerService {
 		List<ActionType> atList = (List<ActionType>)superDao.getObjectList(hql);
 		return atList; 
     }
-    
+	/**
+	 * 获取商品类型List
+	 */
+	@SuppressWarnings("unchecked")
+	public List<GoodsType> queryGoodsTypeList(){
+		String hql="from GoodsType where 1=1 and delFlag = false ";
+		List<GoodsType> goodsTypeList = (List<GoodsType>)superDao.getObjectList(hql);
+		return goodsTypeList;
+	}
     /**
      * 用户userId查 职位positionId
      */
@@ -269,7 +285,7 @@ public class PowerService {
     /**
      * 添加权限
      */
-    public Boolean powerAddAction(int userId,int actionId,String action,String actionPath){
+    public Boolean powerAddAction(int userId,int actionId,String action,String actionPath,int actionTypeId){
         Boolean flag = false;
         //判断action是否为空
         if(StringUtils.isEmpty(action)){
@@ -279,6 +295,10 @@ public class PowerService {
         if(StringUtils.isEmpty(actionPath)){
         	return flag;
         }
+		//判断actionTypeId是否为空
+		if(StringUtils.isEmpty(String.valueOf(actionTypeId))){
+			return flag;
+		}
         //查看此人有没有操作这个的权限
         Boolean bool = isPowerToUserWithAction(userId,actionId);
         if(bool){
@@ -288,6 +308,7 @@ public class PowerService {
         	act.setActionPath(actionPath);
         	act.setCreateTime(new Date());
         	act.setDelFlag(false);
+        	act.setActionTypeId(actionTypeId);
         	Serializable id = superDao.addObject(act);
         	if(id != null){
         		//添加用户与权限的关系
@@ -359,7 +380,61 @@ public class PowerService {
         }
         return flag;
     }
-    
+	/**
+	 * 添加商品分类
+	 */
+	public Boolean addGoodsType(int userId,int actionId,String goodsTypeName){
+		Boolean flag = false;
+		//判断goodsTypeName是否为空
+		if(StringUtils.isBlank(goodsTypeName)){
+			return flag;
+		}
+		//查看此人有没有操作这个的权限
+		Boolean bool = isPowerToUserWithAction(userId,actionId);
+		if(bool){
+			//添加商品分类
+			GoodsType entity = new GoodsType();
+			entity.setCreateTime(new Date());
+			entity.setUpdateTime(new Date());
+			entity.setDelFlag(false);
+			entity.setGoodsTypeName(goodsTypeName);
+			Serializable id = superDao.addObject(entity);
+			if(id != null){
+				log.info("商品分类 "+goodsTypeName+" 添加成功");
+			}
+			flag = true;
+		}
+		return flag;
+	}
+
+	/**
+	 * 添加商品
+	 */
+	public Boolean addGoods(int userId,int actionId,GoodsInfo goodsInfo){
+		Boolean flag = false;
+		//判断goodsTypeName是否为空
+		if(goodsInfo != null && !StringUtils.isBlank(goodsInfo.getGoodsName()) && !StringUtils.isBlank(goodsInfo.getGoodsTypeId().toString())
+				&& !StringUtils.isBlank(goodsInfo.getStorage().toString()) && !StringUtils.isBlank(goodsInfo.getGoodsAmout().toString()) && !StringUtils.isBlank(goodsInfo.getGoodsPrice().toString())
+				&& !StringUtils.isBlank(goodsInfo.getGoodsVipPrice().toString()) && !StringUtils.isBlank(goodsInfo.getGoodsDiscount().toString()) && !StringUtils.isBlank(goodsInfo.getGoodsDescription())){
+
+			//查看此人有没有操作这个的权限
+			Boolean bool = isPowerToUserWithAction(userId,actionId);
+			if(bool){
+				//添加商品
+				goodsInfo.setCreateTime(new Date());
+				goodsInfo.setUpdateTime(new Date());
+				goodsInfo.setDelFlag(false);
+				goodsInfo.setGoodsSaleNum(0);
+				goodsInfo.setGoodsLookAmount(0);
+				Serializable id = superDao.addObject(goodsInfo);
+				if(id != null){
+					log.info("商品 "+goodsInfo.getGoodsName()+" 添加成功");
+				}
+				flag = true;
+			}
+		}
+		return flag;
+	}
     /**
      * 添加 用户与权限关系
      */

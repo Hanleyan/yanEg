@@ -21,11 +21,18 @@
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
 		<div class="content" >
-			<div style="margin:5px;width:400px;height:440px;background-color: #1679dc">
-				<p style='margin: 20px 0px 0px 218px;color: #d1cff1;font-size: 23px;'>请添加权限：</p>
-				<p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'>请添加权限页面jsp名：</p>
+			<div style="margin:5px;width:400px;height:440px;background-color: #8e93982e">
+				<p style='margin: 20px 0px 0px 218px;color: #d1cff1;font-size: 23px;'>选择权限类型：</p>
+				<p style='margin: 20px 0px 0px 218px;color: #d1cff1;font-size: 23px;'>输入权限名称：</p>
+				<p style='margin: 20px 0px 0px 195px;color: #d1cff1;font-size: 23px;'>输入权限英文名：</p>
 			</div>	
-			<div style="margin:5px;width:400px;height:440px;background-color: #58c566">
+			<div style="margin:5px;width:400px;height:440px;background-color: #8e93982e">
+				<select type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='actionTypeId' id='actionTypeId'>
+					<option value="0">--请选择权限类型--</option>
+					<c:forEach items="${actionTypeList}" var="atlist">
+						<option value="${atlist.id}">${atlist.actionTypeName}</option>
+					</c:forEach>
+				</select>
 				<input type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='action' id='action'>
 				<span id="need1" style="color: red;font-size: 3px;"></span>
 				<input type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='actionPath' id='actionPath'>
@@ -44,6 +51,7 @@
 	function submitCaozuo(userId,actionId){
 		var action = $("#action").val();
 		var actionPath = $("#actionPath").val();
+        var actionTypeId = $("#actionTypeId").val();
 		
 		if(action == null || action ==""){
 	 		 $("#need1").html("*必填项");
@@ -56,10 +64,10 @@
 	     $.ajax({
 	  	   	 url:"<%=basePath%>power/powerAddAction.do",
 	         type:"POST",
-	         data: {"userId":userId,"actionId":actionId,"action":action,"actionPath":actionPath},
+	         data: {"userId":userId,"actionId":actionId,"action":action,"actionPath":actionPath,"actionTypeId":actionTypeId},
 	         
 	         success:function(data){
-	        	 alert(data);
+	        	 alert("修改权限后请重新登录！");
 	             window.location.reload();
 	           },
 				error : function(data) {

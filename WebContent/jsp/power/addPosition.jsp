@@ -21,7 +21,7 @@
 	<div class="newCaozuo">
 		<div>
 			<div class="content">
-				<div style="margin:5px;width:400px;height:440px;background-color: #1679dc">
+				<div style="margin:5px;width:400px;height:440px;background-color: #8e93982e">
 					<p style='margin: 20px 0px 0px 218px;color: #d1cff1;font-size: 23px;'>请添加职位：</p>
 					<!-- <p style='margin: 20px 0px 0px 117px;color: #d1cff1;font-size: 23px;'>请添加权限页面jsp名：</p> -->
 				</div>	

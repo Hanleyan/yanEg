@@ -21,7 +21,7 @@
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
 		<div class="content">
-			<div style="margin:5px;width:400px;height:440px;background-color: #1679dc">
+			<div style="margin:5px;width:400px;height:440px;background-color: #8e93982e">
 				<p style='margin: 20px 0px 0px 280px;color: #d1cff1;font-size: 23px;'>姓名：</p>
 				<p style='margin: 20px 0px 0px 280px;color: #d1cff1;font-size: 23px;'>性别：</p> 
 				<p style='margin: 20px 0px 0px 280px;color: #d1cff1;font-size: 23px;'>年龄：</p>

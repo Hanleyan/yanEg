@@ -1,12 +1,14 @@
 package com.controller;
 
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.entity.power.ActionType;
+import com.entity.power.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.alibaba.fastjson.JSON;
-import com.entity.power.Action;
-import com.entity.power.Position;
-import com.entity.power.Users;
 import com.service.PowerService;
 import com.util.BaseController;
 
@@ -36,8 +34,7 @@ public class PowerController extends BaseController{
     @Autowired
     private PowerService powerService;
 
-    @SuppressWarnings("unchecked")
-	@RequestMapping("powerLogin.do")
+    @RequestMapping("powerLogin.do")
     @ResponseBody
     public String powerLogin(HttpServletRequest request, HttpServletResponse response,ModelMap m , PrintWriter writer,String username,String pwd){  // PrintWriter writer,
     	log.info("username："+username+" pwd:"+pwd);
@@ -88,7 +85,13 @@ public class PowerController extends BaseController{
     	}else if("updatePositionPower".equals(actionPath)){
     		List<Position> positionList = powerService.queryPowerForEveryPosition();
     		map.put("positionList", positionList);
-    	}
+    	}else if("addPower".equals(actionPath)){
+			List<ActionType> actionTypeList = powerService.queryActionTypeList();
+			map.put("actionTypeList", actionTypeList);
+		}else if("addGoods".equals(actionPath) || "goodsTypeList".equals(actionPath)){
+			List<GoodsType> goodsTypeList = powerService.queryGoodsTypeList();
+			map.put("goodsTypeList", goodsTypeList);
+		}
     	
     
     	
@@ -117,11 +120,14 @@ public class PowerController extends BaseController{
     }
     @RequestMapping("powerAddAction.do")
     @ResponseBody
-    public void powerAddAction(HttpServletRequest request, HttpServletResponse response, PrintWriter writer,int userId,int actionId,String action,String actionPath){
+    public void powerAddAction(HttpServletRequest request, HttpServletResponse response, PrintWriter writer,int userId,int actionId,String action,String actionPath,int actionTypeId){
     	log.info("userId："+userId+" actionId:"+actionId+" action:"+action+" actionPath:"+actionPath);
-    	Boolean b = powerService.powerAddAction(userId,actionId,action,actionPath);
+    	Boolean b = powerService.powerAddAction(userId,actionId,action,actionPath,actionTypeId);
     	if(b){
     		writer.print("success,Please refresh the page!");
+
+			//使session失效，让用户重新登入
+    		request.getSession().invalidate();
     	}else
     		writer.print("您没有操作权限或输入项为空");
     	
@@ -146,6 +152,39 @@ public class PowerController extends BaseController{
     	}else
     		writer.print("您没有操作权限");    	
     }
+	@RequestMapping("addGoodsType.do")
+	@ResponseBody
+	public void addGoodsType(HttpServletRequest request, PrintWriter writer,int actionId,String goodsTypeName){
+    	Users users = getSessionUser(request);
+		log.info("addGoodsType --  操作员："+users.getUsername()+" 正在添加商品分类 actionId:"+actionId+" goodsTypeName:"+goodsTypeName);
+		Boolean b = powerService.addGoodsType(users.getId(),actionId,goodsTypeName);
+		if(b){
+			writer.print("success!");
+		}else
+			writer.print("您没有操作权限或输入项为空");
+	}
+	@RequestMapping("addGoods.do")
+	@ResponseBody
+	public void addGoods(HttpServletRequest request, PrintWriter writer, String goodsName, int goodsTypeId, int storage, int goodsAmout, BigDecimal goodsPrice,BigDecimal goodsVipPrice,
+						 BigDecimal goodsDiscount,String goodsDescription,int actionId){
+		Users users = getSessionUser(request);
+		GoodsInfo goodsInfo = new GoodsInfo();
+		goodsInfo.setGoodsName(goodsName);
+		goodsInfo.setGoodsTypeId(goodsTypeId);
+		goodsInfo.setStorage(storage);
+		goodsInfo.setGoodsAmout(goodsAmout);
+		goodsInfo.setGoodsPrice(goodsPrice);
+		goodsInfo.setGoodsVipPrice(goodsVipPrice);
+		goodsInfo.setGoodsDiscount(goodsDiscount);
+		goodsInfo.setGoodsDescription(goodsDescription);
+		log.info("addGoods --  操作员："+users.getUsername()+" 正在添加商品 actionId:"+actionId+"goodsInfo:"+JSON.toJSONString(goodsInfo));
+
+		Boolean b = powerService.addGoods(users.getId(),actionId,goodsInfo);
+		if(b){
+			writer.print("success!");
+		}else
+			writer.print("您没有操作权限或输入项为空");
+	}
     @RequestMapping("updateUserPower.do")
     @ResponseBody
     public void updateUserPower(HttpServletRequest request, HttpServletResponse response, PrintWriter writer,int userId,int actionId,int execUserId,Integer[] actionIds){
