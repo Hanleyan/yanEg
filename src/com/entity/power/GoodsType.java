@@ -1,7 +1,16 @@
 package com.entity.power;
 
-import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * 商品类型表
@@ -30,6 +39,9 @@ public class GoodsType {
 
     @Column(name="del_flag", columnDefinition="Boolean")
     private Boolean delFlag;// 是否删除 true 删除  false 未删除  数据库  1 删除 0 未删除
+    
+    @Transient
+    private List<GoodsInfo> goodsList;
 
     public Integer getId() {
         return id;
@@ -70,4 +82,14 @@ public class GoodsType {
     public void setDelFlag(Boolean delFlag) {
         this.delFlag = delFlag;
     }
+
+	public List<GoodsInfo> getGoodsList() {
+		return goodsList;
+	}
+
+	public void setGoodsList(List<GoodsInfo> goodsList) {
+		this.goodsList = goodsList;
+	}
+    
+    
 }

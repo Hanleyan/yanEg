@@ -111,6 +111,16 @@ public class PowerService {
 		List<GoodsType> goodsTypeList = (List<GoodsType>)superDao.getObjectList(hql);
 		return goodsTypeList;
 	}
+	
+	/**
+	 * 获取商品List
+	 */
+	@SuppressWarnings("unchecked")
+	public List<GoodsInfo> goodsListByGoodsTypeId(int goodsTypeId){
+		String hql="from GoodsInfo where 1=1 and delFlag = false and goodsTypeId="+goodsTypeId;
+		return (List<GoodsInfo>)superDao.getObjectList(hql);
+		
+	}
     /**
      * 用户userId查 职位positionId
      */

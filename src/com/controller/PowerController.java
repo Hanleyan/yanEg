@@ -7,19 +7,26 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.entity.power.ActionType;
-import com.entity.power.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.entity.power.Action;
+import com.entity.power.ActionType;
+import com.entity.power.GoodsInfo;
+import com.entity.power.GoodsType;
+import com.entity.power.Position;
+import com.entity.power.Users;
 import com.service.PowerService;
 import com.util.BaseController;
+import com.util.EnumMessageCode;
+import com.util.JsonContent;
 
 /**
  * @author hanley
@@ -88,7 +95,7 @@ public class PowerController extends BaseController{
     	}else if("addPower".equals(actionPath)){
 			List<ActionType> actionTypeList = powerService.queryActionTypeList();
 			map.put("actionTypeList", actionTypeList);
-		}else if("addGoods".equals(actionPath) || "goodsTypeList".equals(actionPath)){
+		}else if("addGoods".equals(actionPath) || "goodsTypeList".equals(actionPath) || "goodsList".equals(actionPath)){
 			List<GoodsType> goodsTypeList = powerService.queryGoodsTypeList();
 			map.put("goodsTypeList", goodsTypeList);
 		}
@@ -97,6 +104,18 @@ public class PowerController extends BaseController{
     	
     	return "power/"+actionPath;
     }
+    @RequestMapping("goodsListByGoodsTypeId.do")
+    @ResponseBody
+    public String goodsListByGoodsTypeId(HttpServletRequest request , int goodsTypeId) throws Exception{
+    	log.info("goodsTypeId获取商品列表 goodsTypeId："+goodsTypeId);
+    	JsonContent jsonContent = new JsonContent();
+    	jsonContent.setCode(EnumMessageCode.code1.getId());
+    	jsonContent.setMessage(EnumMessageCode.getDescById(jsonContent.getCode()));
+    	jsonContent.setResult(powerService.goodsListByGoodsTypeId(goodsTypeId));
+    	log.info("goodsListByGoodsTypeId返回："+JSON.toJSONString(jsonContent));
+		return JSON.toJSONString(jsonContent);
+    }
+    
     
     @RequestMapping("showAllPowerToUserForUpdate.do")
     public String showAllPowerToUserForUpdate(HttpServletRequest request,ModelMap map,Integer execUserId,Integer userId,Integer actionId,String userName) throws Exception{
