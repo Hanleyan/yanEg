@@ -113,12 +113,52 @@ public class PowerService {
 	}
 	
 	/**
-	 * 获取商品List
+	 * 分页获取商品List
 	 */
 	@SuppressWarnings("unchecked")
-	public List<GoodsInfo> goodsListByGoodsTypeId(int goodsTypeId){
-		String hql="from GoodsInfo where 1=1 and delFlag = false and goodsTypeId="+goodsTypeId;
-		return (List<GoodsInfo>)superDao.getObjectList(hql);
+	public List<List<GoodsInfo>> getGoodsList(int goodsTypeId,String pageno,String pagesize){
+		String pageNo = "1";
+        String pageSize = "20";
+        if(!StringUtils.isBlank(pageno)){
+            pageNo= Integer.parseInt( pageno) > 0 ?  pageno : pageNo;
+        }
+        if(!StringUtils.isBlank(pagesize)){
+            pageSize = Integer.parseInt( pagesize) > 0 ? pagesize : pageSize;
+        }
+        
+		String hql="from GoodsInfo where 1=1 and delFlag = false ";
+		String whereSQL = "";
+		if(goodsTypeId != 0){
+			whereSQL= "and goodsTypeId="+goodsTypeId;
+		}
+		hql = hql + whereSQL;
+		
+		List<GoodsInfo> goodslist = (List<GoodsInfo>)superDao.getObjectList(hql);
+		int a = goodslist.size();
+		//第二层数量为4
+		int count = a / 4 + 1;
+		
+		List<List<GoodsInfo>> list = new ArrayList<>();
+		
+			for (int j = 0; j < count; j++) {
+					List<GoodsInfo> arrlist = new ArrayList<GoodsInfo>();
+					for (int i = 0; i < 4; i++) {
+						//计算goodslist的下标
+						int index = j * 4 + i;
+						if(index < a){
+							arrlist.add(goodslist.get(index));
+						}
+						
+						if(i == 3 || index >= a){
+							list.add(arrlist);
+							if(index >= a){
+								break;
+							}
+						}
+					}
+			}
+		
+		return list;
 		
 	}
     /**

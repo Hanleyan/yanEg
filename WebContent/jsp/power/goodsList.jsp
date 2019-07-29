@@ -50,8 +50,8 @@
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
 		<div class="content">
-			<div style="margin:-9rem;width:100rem;background-color: #8e93982e">
-				<p style='margin: 20px 0px 0px 340px;color: #d1cff1;font-size: 23px;'>商品列表</p>
+			<div style="margin:-8rem 0 0 -3rem;width:100rem;background-color: #8e93982e">
+				<p style='margin: 2rem 0 0 22rem;color: #d1cff1;font-size: 23px;'>商品列表</p>
 				<div style="display: flex;flex-direction:row">
 					<div class="goodsLeft" style="background-color: #ff99000f;width: 20rem" >
 						<c:forEach items="${goodsTypeList}" var="list">
@@ -61,9 +61,28 @@
 							</p>
 						</c:forEach>
 					</div>
-					<div class="goodsright" style="display: flex;flex-direction:row;width:78rem;background-color: #dcdcdc17; margin: 0 0 0 1rem;color: #d1cff1">
+					<div class="goodsright" style="display: flex;flex-direction:column;width:78rem;background-color: #dcdcdc17; margin: 1rem 0 0 1rem;color: #d1cff1">
 						<!-- 商品展示 -->
-						<div class="card" style="background-color: #0000ff69">
+						<c:forEach items="${goodsArrayList}" var="dList">
+							<div style="display: flex;flex-direction:row;margin-bottom: 1rem;">
+								<c:forEach items="${dList}" var="goodsList">
+									<div class="card" style="background-color: #0000ff69">
+									<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
+								    <div>
+								         <span>
+									        <ul style="padding: 0.4rem">
+												<li><label style="color:yellow; ">商品名称：</label><label style="font-size: 0.2rem;}">${goodsList.goodsName}</label></li>
+												<li><label style="color:yellow;">价格：</label><label style="font-size: 0.2rem;}">${goodsList.goodsPrice}</label>元</li>
+									        	<li><label style="color:yellow;">库存量：</label><label style="font-size: 0.2rem;}">${goodsList.storage}</label></li>
+									        </ul>
+								         </span> 					    
+								    </div>
+								</div>
+								</c:forEach>
+							</div>
+						</c:forEach>
+						<%-- <div style="display: flex;flex-direction:row;margin-bottom: 1rem;">
+							<div class="card" style="background-color: #0000ff69">
 							<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
 						    <div>
 						         <span>
@@ -74,8 +93,46 @@
 							        </ul>
 						         </span> 					    
 						    </div>
+							</div>
+							<div class="card" style="background-color: #0000ff69">
+								<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
+							    <div>
+							         <span>
+								        <ul style="padding: 0.4rem">
+											<li><label style="color:yellow; ">商品名称：</label><label style="font-size: 0.2rem;}">打破企业间壁垒，提供便捷的接,打破企业间壁垒，提供便捷的接</label></li>
+											<li><label style="color:yellow;">价格：</label><label style="font-size: 0.2rem;}">23.3</label>元</li>
+								        	<li><label style="color:yellow;">库存量：</label><label style="font-size: 0.2rem;}">500</label></li>
+								        </ul>
+							         </span> 					    
+							    </div>
+							</div>
+							<div class="card" style="background-color: #0000ff69">
+								<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
+							    <div>
+							         <span>
+								        <ul style="padding: 0.4rem">
+											<li><label style="color:yellow; ">商品名称：</label><label style="font-size: 0.2rem;}">打破企业间壁垒，提供便捷的接,打破企业间壁垒，提供便捷的接</label></li>
+											<li><label style="color:yellow;">价格：</label><label style="font-size: 0.2rem;}">23.3</label>元</li>
+								        	<li><label style="color:yellow;">库存量：</label><label style="font-size: 0.2rem;}">500</label></li>
+								        </ul>
+							         </span> 					    
+							    </div>
+							</div>
+							<div class="card" style="background-color: #0000ff69">
+								<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
+							    <div>
+							         <span>
+								        <ul style="padding: 0.4rem">
+											<li><label style="color:yellow; ">商品名称：</label><label style="font-size: 0.2rem;}">打破企业间壁垒，提供便捷的接,打破企业间壁垒，提供便捷的接</label></li>
+											<li><label style="color:yellow;">价格：</label><label style="font-size: 0.2rem;}">23.3</label>元</li>
+								        	<li><label style="color:yellow;">库存量：</label><label style="font-size: 0.2rem;}">500</label></li>
+								        </ul>
+							         </span> 					    
+							    </div>
+							</div>
 						</div>
-						<div class="card" style="background-color: #0000ff69">
+						<div style="display: flex;flex-direction:row;margin-bottom: 1rem;">
+							<div class="card" style="background-color: #0000ff69">
 							<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
 						    <div>
 						         <span>
@@ -86,34 +143,45 @@
 							        </ul>
 						         </span> 					    
 						    </div>
-						</div>
-						<div class="card" style="background-color: #0000ff69">
-							<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
-						    <div>
-						         <span>
-							        <ul style="padding: 0.4rem">
-										<li><label style="color:yellow; ">商品名称：</label><label style="font-size: 0.2rem;}">打破企业间壁垒，提供便捷的接,打破企业间壁垒，提供便捷的接</label></li>
-										<li><label style="color:yellow;">价格：</label><label style="font-size: 0.2rem;}">23.3</label>元</li>
-							        	<li><label style="color:yellow;">库存量：</label><label style="font-size: 0.2rem;}">500</label></li>
-							        </ul>
-						         </span> 					    
-						    </div>
-						</div>
-						<div class="card" style="background-color: #0000ff69">
-							<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
-						    <div>
-						         <span>
-							        <ul style="padding: 0.4rem">
-										<li><label style="color:yellow; ">商品名称：</label><label style="font-size: 0.2rem;}">打破企业间壁垒，提供便捷的接,打破企业间壁垒，提供便捷的接</label></li>
-										<li><label style="color:yellow;">价格：</label><label style="font-size: 0.2rem;}">23.3</label>元</li>
-							        	<li><label style="color:yellow;">库存量：</label><label style="font-size: 0.2rem;}">500</label></li>
-							        </ul>
-						         </span> 					    
-						    </div>
-						</div>
+							</div>
+							<div class="card" style="background-color: #0000ff69">
+								<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
+							    <div>
+							         <span>
+								        <ul style="padding: 0.4rem">
+											<li><label style="color:yellow; ">商品名称：</label><label style="font-size: 0.2rem;}">打破企业间壁垒，提供便捷的接,打破企业间壁垒，提供便捷的接</label></li>
+											<li><label style="color:yellow;">价格：</label><label style="font-size: 0.2rem;}">23.3</label>元</li>
+								        	<li><label style="color:yellow;">库存量：</label><label style="font-size: 0.2rem;}">500</label></li>
+								        </ul>
+							         </span> 					    
+							    </div>
+							</div>
+							<div class="card" style="background-color: #0000ff69">
+								<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
+							    <div>
+							         <span>
+								        <ul style="padding: 0.4rem">
+											<li><label style="color:yellow; ">商品名称：</label><label style="font-size: 0.2rem;}">打破企业间壁垒，提供便捷的接,打破企业间壁垒，提供便捷的接</label></li>
+											<li><label style="color:yellow;">价格：</label><label style="font-size: 0.2rem;}">23.3</label>元</li>
+								        	<li><label style="color:yellow;">库存量：</label><label style="font-size: 0.2rem;}">500</label></li>
+								        </ul>
+							         </span> 					    
+							    </div>
+							</div>
+							<div class="card" style="background-color: #0000ff69">
+								<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
+							    <div>
+							         <span>
+								        <ul style="padding: 0.4rem">
+											<li><label style="color:yellow; ">商品名称：</label><label style="font-size: 0.2rem;}">打破企业间壁垒，提供便捷的接,打破企业间壁垒，提供便捷的接</label></li>
+											<li><label style="color:yellow;">价格：</label><label style="font-size: 0.2rem;}">23.3</label>元</li>
+								        	<li><label style="color:yellow;">库存量：</label><label style="font-size: 0.2rem;}">500</label></li>
+								        </ul>
+							         </span> 					    
+							    </div>
+							</div>
+						</div> --%>
 						
-						
-
 					</div>
 				</div>
 				

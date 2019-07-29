@@ -57,7 +57,8 @@ ${actionList} --%>
 								<c:forEach items="${atList.actionList}" var="act">
 									<li>
 										<span class="file" style="font-size: 1rem;">
-											<a href="<%=basePath%>power/entryTakeAction.do?userId=${sessionScope.USER_CONTEXT.id}&actionId=${act.id}&actionPath=${act.actionPath}" style="color: rgba(160, 199, 212, 0.95);">${act.action}</a>
+											<a href="<%=basePath%>power/entryTakeAction.do?userId=${sessionScope.USER_CONTEXT.id}&actionId=${act.id}&actionPath=${act.actionPath}" 
+												style="color: rgba(160, 199, 212, 0.95);"  onclick="getTarbar(${atList.actionTypeName},${act.action})">${act.action}</a>
 										</span>
 
 									</li>
@@ -76,7 +77,7 @@ ${actionList} --%>
 		</div>
 
 		<div class="contentRight cl">
-			<div class="topContent">您的操作</div>
+			<div class="topContent" >您的操作  <span class="tarbar"></span></div>
 			<div class="powerCaozuo">
 				
 			</div>
@@ -108,6 +109,12 @@ ${actionList} --%>
 		$(".powerCaozuo").append("<iframe class='iframeStyle' src='"+actPath+"' frameborder='0' scrolling='yes'></iframe>");  /* class='iframeStyle' */
 		
 	} --%>
+	
+	function getTarbar(actionTypeName,action){
+		var str = actionTypeName + action;
+		$(".tarbar").appendTo(str);
+		
+	}
 	
 
 

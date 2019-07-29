@@ -1,13 +1,12 @@
 package com.util;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.entity.power.Users;
  
 public class MyInterceptor extends BaseController implements HandlerInterceptor {
     private final static Logger logger = Logger.getLogger(MyInterceptor.class);
@@ -33,7 +32,7 @@ public class MyInterceptor extends BaseController implements HandlerInterceptor 
         	logger.info("拦截进登入  "+request.getContextPath()+"/jsp/power/powerLogin.jsp");
             return false;
         }*/
-        Object obj = getSessionUser(request);
+        Users obj = getSessionUser(request);
         
         //HttpSession session = request.getSession();
         // 从session当中获取特定的数据
@@ -45,7 +44,7 @@ public class MyInterceptor extends BaseController implements HandlerInterceptor 
             return false;
         }
         // 已登录，继续向后调用
-        logger.info("已登录，继续向后调用 ");
+        logger.info(obj.getUsername()+"已登录 ");
         return true;
     }
  

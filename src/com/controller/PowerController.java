@@ -98,6 +98,11 @@ public class PowerController extends BaseController{
 		}else if("addGoods".equals(actionPath) || "goodsTypeList".equals(actionPath) || "goodsList".equals(actionPath)){
 			List<GoodsType> goodsTypeList = powerService.queryGoodsTypeList();
 			map.put("goodsTypeList", goodsTypeList);
+			if("goodsList".equals(actionPath)){
+				List<List<GoodsInfo>> goodsArrayList = powerService.getGoodsList(0,null,null);
+				map.put("goodsArrayList", goodsArrayList);
+				log.info("goodsArrayList:"+JSON.toJSONString(goodsArrayList));
+			}
 		}
     	
     
@@ -111,7 +116,7 @@ public class PowerController extends BaseController{
     	JsonContent jsonContent = new JsonContent();
     	jsonContent.setCode(EnumMessageCode.code1.getId());
     	jsonContent.setMessage(EnumMessageCode.getDescById(jsonContent.getCode()));
-    	jsonContent.setResult(powerService.goodsListByGoodsTypeId(goodsTypeId));
+    	jsonContent.setResult(powerService.getGoodsList(goodsTypeId,null,null));
     	log.info("goodsListByGoodsTypeId返回："+JSON.toJSONString(jsonContent));
 		return JSON.toJSONString(jsonContent);
     }
