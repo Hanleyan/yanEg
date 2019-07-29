@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.entity.power.*;
+import com.entity.power.goods.GoodsInfo;
+import com.entity.power.goods.GoodsType;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,15 +35,19 @@ public class PowerService {
     @Autowired
     ISuperDao superDao;
 
+    /**
+     * 登入
+     */
     public Users login(ModelMap m ,String username,String pwd){
     	String hql = "";
     	hql="from Users where 1=1 and delFlag = false and username='"+username+"' and password='"+pwd+"'";
     	Users u = (Users)superDao.getObjectByHql(hql);
     
     	return u;
-    	
-    
     }
+    /**
+     * 进入菜单页的数据
+     */
     public void entryPowerIndex(ModelMap m  ,String username,String pwd){
     	//Map<String,Object> m = new HashMap<String,Object>();
     	String hql = "";
@@ -101,6 +108,23 @@ public class PowerService {
 		String hql="from ActionType where 1=1 and delFlag = false ";
 		List<ActionType> atList = (List<ActionType>)superDao.getObjectList(hql);
 		return atList; 
+    }
+    /**
+     * 获取权限和权限分类一对一
+     */
+    public PowerPOJO getPowerPOJO(Integer actionId){
+    	PowerPOJO powerPOJO = new PowerPOJO();
+    	Action action = queryActionByActionId(actionId);
+    	if(action != null && action.getActionTypeId() != null){
+    		powerPOJO.setAction(action);
+    		
+    		ActionType actionType = getActionTypeById(action.getActionTypeId());
+    		if(actionType != null){
+    			powerPOJO.setActionType(actionType);
+    		}
+    	}
+    	
+    	return powerPOJO;
     }
 	/**
 	 * 获取商品类型List
@@ -302,6 +326,32 @@ public class PowerService {
     	@SuppressWarnings("unchecked")
 		List<Action> allActionList = (List<Action>)superDao.getObjectList(hql);
     	return allActionList;
+    }
+    /**
+     * 查所有权限By权限分类id
+     */
+    public List<Action> showAllPower(Integer actionTypeId){
+    	String hql="from Action where 1=1 and delFlag = false";
+    	String whereHql = "";
+    	if(actionTypeId != null){
+    		whereHql = " and actionTypeId="+actionTypeId;
+    	}
+    	hql = hql + whereHql;
+    	@SuppressWarnings("unchecked")
+		List<Action> allActionList = (List<Action>)superDao.getObjectList(hql);
+    	return allActionList;
+    }
+    /**
+     * 查权限分类By权限id
+     */
+    public ActionType getActionTypeById(Integer id){
+    	String hql="from ActionType where 1=1 and delFlag = false and id="+id;
+    	
+    	ActionType actionType = (ActionType)superDao.getObjectByHql(hql);
+    	if(actionType != null){
+    		return actionType;
+    	}
+    	return null;
     }
     
     /**

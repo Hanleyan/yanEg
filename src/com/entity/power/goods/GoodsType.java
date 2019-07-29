@@ -1,4 +1,4 @@
-package com.entity.power;
+package com.entity.power.goods;
 
 import java.util.Date;
 import java.util.List;

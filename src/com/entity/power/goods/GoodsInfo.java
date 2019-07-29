@@ -1,4 +1,4 @@
-package com.entity.power;
+package com.entity.power.goods;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

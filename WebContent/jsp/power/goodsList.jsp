@@ -50,7 +50,8 @@
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
 		<div class="content">
-			<div style="margin:-8rem 0 0 -3rem;width:100rem;background-color: #8e93982e">
+			<div style="margin:-8rem 0 0 -8rem;width:100rem;background-color: #8e93982e">
+				<span style="font-size: 1.2rem;color: #ccccef;"><span style="color: #9cf9e0;">菜单定位：</span>${power.actionType.actionTypeName} --> ${power.action.action}</span>
 				<p style='margin: 2rem 0 0 22rem;color: #d1cff1;font-size: 23px;'>商品列表</p>
 				<div style="display: flex;flex-direction:row">
 					<div class="goodsLeft" style="background-color: #ff99000f;width: 20rem" >

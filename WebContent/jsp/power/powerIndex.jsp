@@ -58,7 +58,7 @@ ${actionList} --%>
 									<li>
 										<span class="file" style="font-size: 1rem;">
 											<a href="<%=basePath%>power/entryTakeAction.do?userId=${sessionScope.USER_CONTEXT.id}&actionId=${act.id}&actionPath=${act.actionPath}" 
-												style="color: rgba(160, 199, 212, 0.95);"  onclick="getTarbar(${atList.actionTypeName},${act.action})">${act.action}</a>
+												style="color: rgba(160, 199, 212, 0.95);">${act.action}</a>
 										</span>
 
 									</li>
@@ -110,11 +110,7 @@ ${actionList} --%>
 		
 	} --%>
 	
-	function getTarbar(actionTypeName,action){
-		var str = actionTypeName + action;
-		$(".tarbar").appendTo(str);
-		
-	}
+	
 	
 
 

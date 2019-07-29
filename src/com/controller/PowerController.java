@@ -12,17 +12,17 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
 import com.entity.power.Action;
 import com.entity.power.ActionType;
-import com.entity.power.GoodsInfo;
-import com.entity.power.GoodsType;
 import com.entity.power.Position;
+import com.entity.power.PowerPOJO;
 import com.entity.power.Users;
+import com.entity.power.goods.GoodsInfo;
+import com.entity.power.goods.GoodsType;
 import com.service.PowerService;
 import com.util.BaseController;
 import com.util.EnumMessageCode;
@@ -82,6 +82,9 @@ public class PowerController extends BaseController{
     public String entryTakeAction(ModelMap map,Integer userId,Integer actionId,String actionPath){
     	map.put("userId", userId);
     	map.put("actionId", actionId);
+    	//获取权限的一级和二级,用做页面的导航栏
+    	PowerPOJO power = powerService.getPowerPOJO(actionId);
+    	map.put("power", power);
     	
     	//if判断是什么操作
     	if("lookAllPosition".equals(actionPath) || "addUser".equals(actionPath)){
