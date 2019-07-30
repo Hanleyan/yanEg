@@ -49,8 +49,8 @@
 <body>
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
-		<div class="content">
-			<div style="margin:-8rem 0 0 -11rem;width:100rem;background-color: #8e93982e">
+		<!-- <div class="content"> -->
+			<div style="width:100rem;background-color: #8e93982e">
 				<span style="font-size: 1.2rem;color: #ccccef;"><span style="color: #9cf9e0;">菜单定位：</span>${power.actionType.actionTypeName} --> ${power.action.action}</span>
 				<p style='margin: 2rem 0 0 22rem;color: #d1cff1;font-size: 23px;'>商品列表</p>
 				<div style="display: flex;flex-direction:row">
@@ -72,7 +72,7 @@
 								    <div>
 								         <!-- <span> -->
 									        <ul style="padding: 0 0 0 0.5rem">
-									        	<li><label style="color:#e4393c;font-size: 20px;">￥：${goodsList.goodsPrice}</label></li>
+									        	<li><label style="color:#e4393c;font-size: 20px;">￥${goodsList.goodsPrice}</label></li>
 												<li><label style="color:yellow; font-size: 12px;">&nbsp;${goodsList.goodsName}</label></li>
 									        	<li><label style="font-size: 12px;color: #d1cff1;"><strong>&nbsp;${goodsList.storage}条评价</strong></label></li>
 									        </ul>
@@ -88,7 +88,7 @@
 				</div>
 				
 			</div>	
-		</div>
+		<!-- </div> -->
 	</div>
 <script type="text/javascript">
 	

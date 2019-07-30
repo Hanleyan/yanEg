@@ -88,11 +88,11 @@ ${actionList} --%>
 <script type="text/javascript">
 
 	/* 根据权限的数量来增加页面高度 */
-	var listSize = $("#actionListSize").val(); 
+	/* var listSize = $("#actionListSize").val(); 
 	if(listSize > 22){
 		var higt = listSize * 38 + "px";
 		$(".cl").css({ "height": higt});
-	}
+	} */
 	
 	/*$(".ul").hide();*/
 	

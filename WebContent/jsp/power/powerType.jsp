@@ -20,7 +20,7 @@
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
 		<div class="content">
-			<div style="margin:-8rem 0 0 -11rem;width:800px;height:440px;background-color: #8e93982e">
+			<div style="width:800px;height:440px;background-color: #8e93982e">
 				<span style="font-size: 1.2rem;color: #ccccef;"><span style="color: #9cf9e0;">菜单定位：</span>${power.actionType.actionTypeName} --> ${power.action.action}</span>
 				<p style='margin: 20px 0px 0px 340px;color: #d1cff1;font-size: 23px;'>权限类型列表</p>
 				<table>
