@@ -50,33 +50,33 @@
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
 		<div class="content">
-			<div style="margin:-8rem 0 0 -8rem;width:100rem;background-color: #8e93982e">
+			<div style="margin:-8rem 0 0 -11rem;width:100rem;background-color: #8e93982e">
 				<span style="font-size: 1.2rem;color: #ccccef;"><span style="color: #9cf9e0;">菜单定位：</span>${power.actionType.actionTypeName} --> ${power.action.action}</span>
 				<p style='margin: 2rem 0 0 22rem;color: #d1cff1;font-size: 23px;'>商品列表</p>
 				<div style="display: flex;flex-direction:row">
-					<div class="goodsLeft" style="background-color: #ff99000f;width: 20rem" >
+					<div class="goodsLeft" style="background-color: #ff99000f;width: 10rem" >
 						<c:forEach items="${goodsTypeList}" var="list">
-							<p style='margin: 20px 0px 0px 100px;color: #d1cff1;font-size: 23px;'>
+							<p style='margin: 20px 0px 0px 10px;color: #d1cff1;font-size: 23px;'>
 								<a href="javascript:;" onclick=getGoodsList(${list.id}) style="color: #d1cff1;text-decoration:none;">${list.goodsTypeName}
 								</a>
 							</p>
 						</c:forEach>
 					</div>
-					<div class="goodsright" style="display: flex;flex-direction:column;width:78rem;background-color: #dcdcdc17; margin: 1rem 0 0 1rem;color: #d1cff1">
+					<div class="goodsright" style="display: flex;flex-direction:column;width:88rem;background-color: #dcdcdc17; margin: 1rem 0 0 1rem;color: #d1cff1">
 						<!-- 商品展示 -->
 						<c:forEach items="${goodsArrayList}" var="dList">
 							<div style="display: flex;flex-direction:row;margin-bottom: 1rem;">
 								<c:forEach items="${dList}" var="goodsList">
-									<div class="card" style="background-color: #0000ff69">
+									<div class="card" style="background-color: #1e10f37d">
 									<img  src="<%=basePath%>image/2018032617295519.jpg" alt=""/>
 								    <div>
-								         <span>
-									        <ul style="padding: 0.4rem">
-												<li><label style="color:yellow; ">商品名称：</label><label style="font-size: 0.2rem;}">${goodsList.goodsName}</label></li>
-												<li><label style="color:yellow;">价格：</label><label style="font-size: 0.2rem;}">${goodsList.goodsPrice}</label>元</li>
-									        	<li><label style="color:yellow;">库存量：</label><label style="font-size: 0.2rem;}">${goodsList.storage}</label></li>
+								         <!-- <span> -->
+									        <ul style="padding: 0 0 0 0.5rem">
+									        	<li><label style="color:#e4393c;font-size: 20px;">￥：${goodsList.goodsPrice}</label></li>
+												<li><label style="color:yellow; font-size: 12px;">&nbsp;${goodsList.goodsName}</label></li>
+									        	<li><label style="font-size: 12px;color: #d1cff1;"><strong>&nbsp;${goodsList.storage}条评价</strong></label></li>
 									        </ul>
-								         </span> 					    
+								         <!-- </span> 	 -->				    
 								    </div>
 								</div>
 								</c:forEach>

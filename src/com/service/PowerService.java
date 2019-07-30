@@ -159,21 +159,22 @@ public class PowerService {
 		
 		List<GoodsInfo> goodslist = (List<GoodsInfo>)superDao.getObjectList(hql);
 		int a = goodslist.size();
-		//第二层数量为4
-		int count = a / 4 + 1;
+		//第二层数量为ercount
+		int ercount = 5;
+		int count = a / ercount + 1;
 		
 		List<List<GoodsInfo>> list = new ArrayList<>();
 		
 			for (int j = 0; j < count; j++) {
 					List<GoodsInfo> arrlist = new ArrayList<GoodsInfo>();
-					for (int i = 0; i < 4; i++) {
+					for (int i = 0; i < ercount; i++) {
 						//计算goodslist的下标
-						int index = j * 4 + i;
+						int index = j * ercount + i;
 						if(index < a){
 							arrlist.add(goodslist.get(index));
 						}
 						
-						if(i == 3 || index >= a){
+						if(i == (ercount-1) || index >= a){
 							list.add(arrlist);
 							if(index >= a){
 								break;
