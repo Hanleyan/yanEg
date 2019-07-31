@@ -50,3 +50,14 @@
 .newCaozuo{
 	margin: -50rem 0 0 18rem;
 }
+table{
+    margin: 1rem 0 0 12rem;
+	COLOR: #efefef;
+	FONT-SIZE: 1.2REM;
+}
+table th{
+	padding:0.5rem;
+}
+table td {
+	padding:0.5rem;
+}

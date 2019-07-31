@@ -33,7 +33,7 @@
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
 		<div class="content">
-			<div style="background-color: #8e93982e">
+			<div style="width:55rem;height:32rem;background-color: #8e93982e">
 				<span style="font-size: 1.2rem;color: #ccccef;"><span style="color: #9cf9e0;">菜单定位：</span>${power.actionType.actionTypeName} --> ${power.action.action}</span>
 				<div class="content">
 					<div>
@@ -52,9 +52,9 @@
 									<%-- <p style='margin: 20px 0px 0px 117px;font-size: 23px;'><a href="<%=basePath%>power/showUserDetail.do?execUserId=${list.id}&userName=${list.username}" style="color: #d1cff1;text-decoration:none;" >${list.username}<span style="font-size: 12px;color: #adb5d2;">(${list.position} ${list.actionNum}个权限)</span></a></p>
 									 --%><tr>
 									<td>${atList.id}</td>
-									<td><input type="text" id="actionTypeName" value="${atList.actionTypeName}" disabled="disabled" style="background: #ffffff05;color: #efefef;font-size: 1rem;border: 1px;" ></td>
+									<td>${atList.actionTypeName}</td>
 									<td>${atList.createTime}</td>
-									<td><button onclick="updatePtype(${atList.id})">修改</button></td>
+									<td></td>
 								</tr>
 								</c:forEach>
 								
@@ -94,46 +94,17 @@
                 url: "<%=basePath%>/power/addPowerType.do",
                 cache : true, //(默认: true,dataType为script和jsonp时默认为false) jQuery 1.2 新功能，设置为 false 将不缓存此页面。
                 
+
                 success:function(data){
-                	var jsonReturnObject = JSON.parse(data);
-                    if(jsonReturnObject.code=="1"){
-                        alert(jsonReturnObject.message);
+                    if(data.code=="1"){
+                        alert(data.message);
                         window.location.reload();
                     }else{
-                    	alert(jsonReturnObject.message);
+                    	alert(data.message);
                     }
                 }
             });
         });
-	}
-	
-	function updatePtype(id){
-		$("#actionTypeName").attr("disabled",false);
-		
-		
-		
-		var actionTypeName = $("#actionTypeName");
-		if(null != actionTypeName || actionTypeName ==""){
-			alert("类型名称不能为空");
-			return;
-		}
-		$.ajax({
-            type:"POST", //请求方式
-            data: {id:id,powerTypeName:powerTypeName},   
-            url: "<%=basePath%>/power/updatePowerType.do",
-            cache : true, //(默认: true,dataType为script和jsonp时默认为false) jQuery 1.2 新功能，设置为 false 将不缓存此页面。
-            
-            success:function(data){
-            	var jsonReturnObject = JSON.parse(data);
-                if(jsonReturnObject.code=="1"){
-                    alert(jsonReturnObject.message);
-                    window.location.reload();
-                }else{
-                	alert(jsonReturnObject.message);
-                }
-            }
-        });
-		
 	}
 
 </script>

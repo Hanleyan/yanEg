@@ -36,6 +36,9 @@ public class Action implements Serializable{
     @Column(name="action_type_id", columnDefinition="int (5)")
     private Integer actionTypeId;//权限分类id
     
+    @Column(name="action_show_code", columnDefinition="int (2)")
+    private Integer actionShowCode;//1显性  0隐性     #显性是需要在菜单显示，隐性不需要菜单显示
+    
     @Column(name="create_time", columnDefinition="datetime",updatable=false)
     private Date createTime;//创建日期
 
@@ -99,6 +102,14 @@ public class Action implements Serializable{
 
 	public void setActionTypeId(Integer actionTypeId) {
 		this.actionTypeId = actionTypeId;
+	}
+
+	public Integer getActionShowCode() {
+		return actionShowCode;
+	}
+
+	public void setActionShowCode(Integer actionShowCode) {
+		this.actionShowCode = actionShowCode;
 	}
     
     

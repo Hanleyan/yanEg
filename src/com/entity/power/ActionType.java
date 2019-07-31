@@ -1,5 +1,6 @@
 package com.entity.power;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -20,8 +21,13 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name="action_type")
-public class ActionType {
+public class ActionType implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6269489498308871293L;
+
 	@Id
     @Basic
     @Column(name="id")

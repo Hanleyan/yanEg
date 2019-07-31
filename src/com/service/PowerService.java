@@ -383,6 +383,58 @@ public class PowerService {
     /*************************  各种查询方法    end *********************************************************/
     
     /*************************  各种添加方法    start *******************************************************/
+    
+    
+    /**
+     * 添加权限类型
+     */
+    public Boolean addPowerType(int userId,String actionPath,String powerTypeName){
+        Boolean flag = false;
+        //判断powerTypeName是否为空
+        if(StringUtils.isEmpty(powerTypeName)){
+        	return flag;
+        }
+       
+        //查看此人有没有操作这个的权限
+        Boolean bool = isPowerToUserWithAction(userId,actionPath);
+        if(bool){
+        	//添加权限类型
+        	ActionType actType = new ActionType();
+        	actType.setActionTypeName(powerTypeName);
+        	actType.setCreateTime(new Date());
+        	actType.setUpdateTime(new Date());
+        	actType.setDelFlag(false);
+        	Serializable id = superDao.addObject(actType);
+        	if(id != null){
+        		flag = true;
+        	}
+        }       
+        return flag;
+    }  
+    
+    /**
+     * 修改权限类型
+     */
+    public Boolean updatePowerType(int userId,String actionPath,Integer id,String powerTypeName){
+        Boolean flag = false;
+        //判断powerTypeName是否为空
+        if(StringUtils.isEmpty(powerTypeName)){
+        	return flag;
+        }
+       
+        //查看此人有没有操作这个的权限
+        Boolean bool = isPowerToUserWithAction(userId,actionPath);
+        if(bool){
+        	//修改权限类型
+        	String hql = " update ActionType set powerTypeName='"+powerTypeName+"',updateTime='"+new Date()+"' where delFlag = false and id="+id;
+        	Boolean boo = superDao.updateObjectByHql(hql);
+        	if(boo){
+        		flag = true;
+        	}
+        }       
+        return flag;
+    }  
+    
     /**
      * 添加权限
      */
@@ -600,7 +652,19 @@ public class PowerService {
         if(uwa != null) return true;
         else return false;
     }
-    
+    /**
+     * 判断用户有没有此权限
+     */
+    public Boolean isPowerToUserWithAction(int userId,String actionPath){
+    	/*String hql = "from  UserWithActionInfo where 1=1 and delFlag = false and userId="+userId+" and actionId="+actionId;
+        UserWithActionInfo uwa = (UserWithActionInfo)superDao.getObjectByHql(hql);*/
+    	
+    	String sql = "select uwa.id from action act,user_with_action_info uwa where act.del_flag=false and uwa.del_flag=false \n"
+    	+" and act.id = uwa.action_id and act.action_path='"+actionPath+"'";
+    	Object id = superDao.getObjectBySql(sql);
+        if(id != null) return true;
+        else return false;
+    }
     
     
     /**

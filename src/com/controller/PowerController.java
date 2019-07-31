@@ -95,7 +95,10 @@ public class PowerController extends BaseController{
     	}else if("updatePositionPower".equals(actionPath)){
     		List<Position> positionList = powerService.queryPowerForEveryPosition();
     		map.put("positionList", positionList);
-    	}else if("addPower".equals(actionPath)){
+    	}else if("addPower".equals(actionPath) || "powerType".equals(actionPath) || "addPowerType".equals(actionPath)){
+    		if("addPowerType".equals(actionPath)){
+    			actionPath = "powerType";
+    		}
 			List<ActionType> actionTypeList = powerService.queryActionTypeList();
 			map.put("actionTypeList", actionTypeList);
 		}else if("addGoods".equals(actionPath) || "goodsTypeList".equals(actionPath) || "goodsList".equals(actionPath)){
@@ -108,7 +111,7 @@ public class PowerController extends BaseController{
 			}
 		}
     	
-    
+
     	
     	return "power/"+actionPath;
     }
@@ -145,6 +148,48 @@ public class PowerController extends BaseController{
     	map.put("userName", userName);
     	return "power/showUserDetail";
     }
+    @RequestMapping("addPowerType.do")
+    @ResponseBody
+    public void addPowerType(HttpServletRequest request, HttpServletResponse response,PrintWriter writer,String powerTypeName){
+    	Users user = getSessionUser(request);
+    	JsonContent jsonContent = new JsonContent();
+    	log.info("addPowerType新增权限类型 --  userId："+user.getId()+"  新增的权限类型名称powerTypeName:"+powerTypeName);
+    	
+    	String actionPath="addPowerType";//新增权限类型
+    	Boolean b = powerService.addPowerType(user.getId(),actionPath,powerTypeName);
+    	if(b){
+    		jsonContent.setCode(EnumMessageCode.code1.getId());
+    	}else{
+    		jsonContent.setCode(EnumMessageCode.code3.getId());
+    	}
+    	jsonContent.setMessage(EnumMessageCode.getDescById(jsonContent.getCode()));
+    	String retStr = JSON.toJSONString(jsonContent);
+    	log.info("新增权限类型 返回结果:"+retStr);
+    	
+    	writer.write(retStr);
+    }
+    
+    @RequestMapping("updatePowerType.do")
+    @ResponseBody
+    public void updatePowerType(HttpServletRequest request, HttpServletResponse response,PrintWriter writer,Integer id,String powerTypeName){
+    	Users user = getSessionUser(request);
+    	JsonContent jsonContent = new JsonContent();
+    	log.info("updatePowerType修改权限类型 --  userId："+user.getId()+" id:"+id+" powerTypeName:"+powerTypeName);
+    	
+    	String actionPath="updatePowerType";//新增权限类型
+    	Boolean b = powerService.updatePowerType(user.getId(),actionPath,id,powerTypeName);
+    	if(b){
+    		jsonContent.setCode(EnumMessageCode.code1.getId());
+    	}else{
+    		jsonContent.setCode(EnumMessageCode.code3.getId());
+    	}
+    	jsonContent.setMessage(EnumMessageCode.getDescById(jsonContent.getCode()));
+    	String retStr = JSON.toJSONString(jsonContent);
+    	log.info("新增权限类型 返回结果:"+retStr);
+    	
+    	writer.write(retStr);
+    }
+    
     @RequestMapping("powerAddAction.do")
     @ResponseBody
     public void powerAddAction(HttpServletRequest request, HttpServletResponse response, PrintWriter writer,int userId,int actionId,String action,String actionPath,int actionTypeId){
