@@ -1,6 +1,8 @@
 package com.service;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,6 +10,8 @@ import java.util.List;
 import com.entity.power.*;
 import com.entity.power.goods.GoodsInfo;
 import com.entity.power.goods.GoodsType;
+import com.entity.power.order.OrderGoodsRecords;
+import com.entity.power.order.Orders;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -21,6 +25,7 @@ import org.springframework.ui.ModelMap;
 import com.alibaba.fastjson.JSON;
 import com.dao.inter.ISuperDao;
 import com.util.DateUtil;
+import com.util.Tool;
 
 /**
  * @author hanley
@@ -100,32 +105,7 @@ public class PowerService {
     /***************************用户操作*******************************/
     
     /*************************  各种查询方法     *******************************************************/
-    /**
-     * 获取权限分类List
-     */
-    @SuppressWarnings("unchecked")
-    public List<ActionType> queryActionTypeList(){
-		String hql="from ActionType where 1=1 and delFlag = false ";
-		List<ActionType> atList = (List<ActionType>)superDao.getObjectList(hql);
-		return atList; 
-    }
-    /**
-     * 获取权限和权限分类一对一
-     */
-    public PowerPOJO getPowerPOJO(Integer actionId){
-    	PowerPOJO powerPOJO = new PowerPOJO();
-    	Action action = queryActionByActionId(actionId);
-    	if(action != null && action.getActionTypeId() != null){
-    		powerPOJO.setAction(action);
-    		
-    		ActionType actionType = getActionTypeById(action.getActionTypeId());
-    		if(actionType != null){
-    			powerPOJO.setActionType(actionType);
-    		}
-    	}
-    	
-    	return powerPOJO;
-    }
+    
 	/**
 	 * 获取商品类型List
 	 */
@@ -135,7 +115,13 @@ public class PowerService {
 		List<GoodsType> goodsTypeList = (List<GoodsType>)superDao.getObjectList(hql);
 		return goodsTypeList;
 	}
-	
+	/**
+	 * 获取商品
+	 */
+	public GoodsInfo queryGoodsById(Integer goodsId){
+		String hql="from GoodsInfo where 1=1 and delFlag = false and id ="+goodsId;
+		return (GoodsInfo)superDao.getObjectByHql(hql);
+	}
 	/**
 	 * 分页获取商品List
 	 */
@@ -276,6 +262,58 @@ public class PowerService {
 		return null;   //查无权限
     }
     /**
+     * 获取所有权限action
+     */
+    @SuppressWarnings("unchecked")
+    public List<Action> queryAllActionList(){
+		String hql="from Action where 1=1 and delFlag = false ";
+		List<Action> actionList = (List<Action>)superDao.getObjectList(hql);
+		for (Action action : actionList) {
+			ActionType actionType = queryActionTypeById(action.getActionTypeId());
+			if(actionType != null && actionType.getActionTypeName() != null){
+				action.setActionTypeName(actionType.getActionTypeName());
+			}else{
+				action.setActionTypeName("-");
+			}
+			
+		}
+		return actionList;
+    }
+    /**
+     * 获取权限分类List
+     */
+    @SuppressWarnings("unchecked")
+    public List<ActionType> queryActionTypeList(){
+		String hql="from ActionType where 1=1 and delFlag = false ";
+		List<ActionType> atList = (List<ActionType>)superDao.getObjectList(hql);
+		return atList; 
+    }
+    /**
+     * 用户actionTypeId查权限分类actionType
+     */
+    public ActionType queryActionTypeById(int actionTypeId){
+    	//权限id查权限
+		String hql="from ActionType where 1=1 and delFlag = false and id="+actionTypeId;
+		return (ActionType)superDao.getObjectByHql(hql);
+    }
+    /**
+     * 获取权限和权限分类一对一
+     */
+    public PowerPOJO getPowerPOJO(Integer actionId){
+    	PowerPOJO powerPOJO = new PowerPOJO();
+    	Action action = queryActionByActionId(actionId);
+    	if(action != null && action.getActionTypeId() != null){
+    		powerPOJO.setAction(action);
+    		
+    		ActionType actionType = getActionTypeById(action.getActionTypeId());
+    		if(actionType != null){
+    			powerPOJO.setActionType(actionType);
+    		}
+    	}
+    	
+    	return powerPOJO;
+    }
+    /**
      * 查看所有的职位
      */
     public List<Position> lookAllPosition(){
@@ -385,6 +423,100 @@ public class PowerService {
     /*************************  各种添加方法    start *******************************************************/
     
     
+    
+    /**
+     * 新增订单 ( 来源： 立即下单 、购物车下单)
+     * @param user 用户
+     * @param actionPath 新增订单权限
+     * @param goodsIds 商品id数组
+     * @param ordersPrice 订单价格
+     * @param orderSource 订单来源
+     * @param orderPayType 订单支付方式
+     * @return Boolean
+     */
+    public Boolean makeOrder(Users user,String actionPath,Integer[] goodsIds,BigDecimal ordersPrice,Integer orderSource,Integer orderPayType){
+        Boolean flag = false;
+        //判断物品IDgoodsId是否为空
+        if(goodsIds.length == 0){
+        	return flag;
+        }
+        //判断物品价格是否为空
+        if(StringUtils.isEmpty(ordersPrice.toString())){
+        	return flag;
+        }
+       
+        //查看此人有没有操作这个的权限
+        Boolean bool = isPowerToUserWithAction(user.getId(),actionPath);
+        if(bool){
+        	//添加订单
+        	Serializable id = saveOrder(user,ordersPrice,orderSource,orderPayType);
+        	if(id != null){
+        		//添加订单物品记录表
+        		//Integer[] goodsIds = {goodsId};//物品id数组
+        		Boolean b = saveOrderGoodsRecords(user,goodsIds,Integer.valueOf(id.toString()));
+        		if(b){
+        			flag = true;
+        		}
+        	}
+        }       
+        return flag;
+    }  
+    
+    /**保存订单*/
+    private Serializable saveOrder(Users user,BigDecimal ordersPrice,Integer orderSource,Integer orderPayType){
+    	Orders orders = new Orders();
+    	orders.setCreateTime(new Date());
+    	orders.setUpdateTime(new Date());
+    	orders.setDelFlag(false);
+    	
+    	orders.setUserId(user.getId());
+    	orders.setOrderNo(Tool.getOrderNum(user.getId()));
+    	orders.setOrdersPrice(ordersPrice);
+    	orders.setOrderSource(orderSource);
+    	orders.setOrderPayType(orderPayType);
+    	Serializable id = superDao.addObject(orders);
+    	
+    	return id;
+    }
+    /**保存订单物品记录*/
+    private Boolean saveOrderGoodsRecords(Users user,Integer[] goodsIds,Integer orderId){
+    	
+    	try{
+    		for (int i = 0; i < goodsIds.length; i++) {
+        		OrderGoodsRecords entity = new OrderGoodsRecords();
+            	entity.setCreateTime(new Date());
+            	entity.setUpdateTime(new Date());
+            	entity.setDelFlag(false);
+            	
+            	entity.setGoodsId(goodsIds[i]);
+            	entity.setOrderId(orderId);
+            	
+            	GoodsInfo goodsInfo = queryGoodsById(goodsIds[i]);
+            	if(goodsInfo != null){
+            		if(goodsInfo.getGoodsName() != null){
+            			entity.setGoodsName(goodsInfo.getGoodsName());
+            		}else{
+            			entity.setGoodsName("-");
+            		}
+                	if(goodsInfo.getGoodsPrice() != null){
+                		entity.setGoodsPrice(goodsInfo.getGoodsPrice());
+                	}else{
+                		entity.setGoodsPrice(null);
+                	}
+            	}else{
+            		entity.setGoodsName("-");
+            		entity.setGoodsPrice(null);
+            	}
+            	
+            	superDao.addObject(entity);
+    		}
+    	}catch(Exception e){
+    		e.printStackTrace();
+    		log.error(e, e);
+    		return false;
+    	}
+    	return true;
+    }
     /**
      * 添加权限类型
      */
@@ -426,7 +558,44 @@ public class PowerService {
         Boolean bool = isPowerToUserWithAction(userId,actionPath);
         if(bool){
         	//修改权限类型
-        	String hql = " update ActionType set powerTypeName='"+powerTypeName+"',updateTime='"+new Date()+"' where delFlag = false and id="+id;
+        	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        	String hql = " update ActionType set actionTypeName='"+powerTypeName+"',updateTime='"+format.format(new Date())+"' where delFlag = false and id="+id;
+        	Boolean boo = superDao.updateObjectByHql(hql);
+        	if(boo){
+        		flag = true;
+        	}
+        }       
+        return flag;
+    }  
+    
+    /**
+     * 修改权限
+     */
+    public Boolean updateAction(int userId,String actionPath,Integer id,String actionName,String actionEName,int actionTypeId){
+        Boolean flag = false;
+        //判断actionName是否为空
+        if(StringUtils.isEmpty(actionName)){
+        	return flag;
+        }
+        //判断actionEName是否为空
+        if(StringUtils.isEmpty(actionEName)){
+        	return flag;
+        }
+        //判断actionTypeId是否为0
+        if(actionTypeId == 0){
+        	return flag;
+        }
+      //判断修改权限的id是否为0
+        if(id == null){
+        	return flag;
+        }
+       
+        //查看此人有没有操作这个的权限
+        Boolean bool = isPowerToUserWithAction(userId,actionPath);
+        if(bool){
+        	//修改权限
+        	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        	String hql = " update Action set action='"+actionName+"',actionPath='"+actionEName+"',actionTypeId="+actionTypeId+",updateTime='"+format.format(new Date())+"' where delFlag = false and id="+id;
         	Boolean boo = superDao.updateObjectByHql(hql);
         	if(boo){
         		flag = true;
@@ -438,7 +607,7 @@ public class PowerService {
     /**
      * 添加权限
      */
-    public Boolean powerAddAction(int userId,int actionId,String action,String actionPath,int actionTypeId){
+    public Boolean powerAddAction(int userId,String action,String actionPath,int actionTypeId){
         Boolean flag = false;
         //判断action是否为空
         if(StringUtils.isEmpty(action)){
@@ -453,7 +622,8 @@ public class PowerService {
 			return flag;
 		}
         //查看此人有没有操作这个的权限
-        Boolean bool = isPowerToUserWithAction(userId,actionId);
+		String actPath = "addPower";
+        Boolean bool = isPowerToUserWithAction(userId,actPath);
         if(bool){
         	//添加权限
         	Action act = new Action();
