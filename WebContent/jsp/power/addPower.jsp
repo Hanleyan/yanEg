@@ -27,7 +27,7 @@
 				<p style='margin: 20px 0px 0px 195px;color: #d1cff1;font-size: 23px;'>输入权限英文名：</p>
 			</div>	
 			<div style="margin:5px;width:400px;height:440px;background-color: #8e93982e">
-				<select type='text' style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='actionTypeId' id='actionTypeId'>
+				<select style='margin: 18px 0px 0px 8px;color: #000000;font-size: 23px;' name='actionTypeId' id='actionTypeId'>
 					<option value="0">--请选择权限类型--</option>
 					<c:forEach items="${actionTypeList}" var="atlist">
 						<option value="${atlist.id}">${atlist.actionTypeName}</option>

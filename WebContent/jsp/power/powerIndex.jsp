@@ -38,7 +38,8 @@
 <hr>
 ${actionList} --%>
 	<div class="topage">
-		<div class="topContent">欢迎<span style="color:#dad081">${sessionScope.USER_CONTEXT.username}</span>    您的身份：<span style="color:#CCFFFF">${sessionScope.USER_POSITION.position}</span></div>
+		<div class="topContent">欢迎<span style="color:#dad081">${sessionScope.USER_CONTEXT.username}</span>    您的身份：<span style="color:#CCFFFF">${sessionScope.USER_POSITION.position}</span>
+		<a href="<%=basePath%>power/powerLoginOut.do">退出</a></div>
 	</div>
 
 	<div class="content">

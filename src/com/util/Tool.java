@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
@@ -479,7 +481,7 @@ public class Tool {
 		}
 		return returnStr;
 	}
-	
+	/** 10个随机汉字？*/
 	public static String getTenHanziByRandom() throws UnsupportedEncodingException{
 		
 		String str = "";
@@ -499,6 +501,36 @@ public class Tool {
 
 		return str;
 		
+	}
+	/** 订单编号*/
+	public static String getOrderNum(Integer userId)  {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String orderNum = "";
+		
+		orderNum = format.format(new Date()) + userId+generateTextCode(6);
+		return orderNum;
+		
+	}
+	
+	/**
+	 * 生成纯数字验证码
+	 * length 长度，默认为6
+	 */
+	public static String generateTextCode(int length){
+		if(length == 0){
+			length = 6;
+		}
+		
+		StringBuffer code=new StringBuffer();
+		int i=0;
+		Random r=new Random();
+		
+		while(i<length){
+			int t=r.nextInt(9);
+			code.append(t);
+			i++;
+		}
+		return code.toString();
 	}
 	
 }

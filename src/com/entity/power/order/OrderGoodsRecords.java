@@ -12,27 +12,33 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * 订单记录表
+ * 订单商品记录表
  * @author hanley
  * @date 2019/07/29 23:23
  * 风萧萧兮易水寒
  */
 
 @Entity
-@Table(name="orders_record")
-public class OrderRecord {
+@Table(name="orders_goods_record")
+public class OrderGoodsRecords {
 	
 	@Id
     @Basic
     @Column(name="id")
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private Integer id;//订单记录表ID
+    private Integer id;//订单商品记录表ID
 
     @Column(name="order_id", columnDefinition="int (11)")
     private Integer orderId;//订单id
 
     @Column(name="goods_id", columnDefinition="int (11)")
     private Integer goodsId;//商品id
+    
+    @Column(name="goods_name", columnDefinition="varchar (255)")
+    private String goodsName;//商品名称
+    
+    @Column(name="goods_price", columnDefinition="decimal (10,2)")
+    private BigDecimal goodsPrice;//商品单价(元)
 
     @Column(name="create_time", columnDefinition="datetime",updatable=false)
     private Date createTime;//创建日期（入库日期）
@@ -89,6 +95,22 @@ public class OrderRecord {
 
 	public void setDelFlag(Boolean delFlag) {
 		this.delFlag = delFlag;
+	}
+
+	public String getGoodsName() {
+		return goodsName;
+	}
+
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
+	}
+
+	public BigDecimal getGoodsPrice() {
+		return goodsPrice;
+	}
+
+	public void setGoodsPrice(BigDecimal goodsPrice) {
+		this.goodsPrice = goodsPrice;
 	}
     
     

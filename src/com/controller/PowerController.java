@@ -56,6 +56,20 @@ public class PowerController extends BaseController{
         return null;
 
     }
+    @RequestMapping("powerLoginOut.do")
+    public String powerLogin(HttpServletRequest request, HttpServletResponse response){  // PrintWriter writer,
+    	
+    	Users u =  getSessionUser(request);
+        log.info("退出登入用户u："+JSON.toJSONString(u));
+        if(u != null) {
+        	//使session失效，让用户重新登入
+    		request.getSession().invalidate();
+    		
+    		return "power/powerLogin";
+        }
+        return "power/powerLogin";
+
+    }
     
     @SuppressWarnings("unchecked")
 	@RequestMapping("entryPowerIndex.do")
@@ -95,8 +109,8 @@ public class PowerController extends BaseController{
     	}else if("updatePositionPower".equals(actionPath)){
     		List<Position> positionList = powerService.queryPowerForEveryPosition();
     		map.put("positionList", positionList);
-    	}else if("addPower".equals(actionPath) || "powerType".equals(actionPath) || "addPowerType".equals(actionPath)){
-    		if("addPowerType".equals(actionPath)){
+    	}else if( "powerType".equals(actionPath) || "addPowerType".equals(actionPath) || "updatePowerType".equals(actionPath)){
+    		if("addPowerType".equals(actionPath) || "updatePowerType".equals(actionPath)){
     			actionPath = "powerType";
     		}
 			List<ActionType> actionTypeList = powerService.queryActionTypeList();
@@ -109,12 +123,43 @@ public class PowerController extends BaseController{
 				map.put("goodsArrayList", goodsArrayList);
 				log.info("goodsArrayList:"+JSON.toJSONString(goodsArrayList));
 			}
+		}else if("addPower".equals(actionPath) || "actionList".equals(actionPath) || "updateAction".equals(actionPath)){
+			if("addPower".equals(actionPath) || "updateAction".equals(actionPath)){
+				actionPath = "actionList";
+			}
+			List<Action> actionList = powerService.queryAllActionList();
+			map.put("actionList", actionList);
+			List<ActionType> actionTypeList = powerService.queryActionTypeList();
+			map.put("actionTypeList", actionTypeList);
 		}
     	
 
     	
     	return "power/"+actionPath;
     }
+    
+    @RequestMapping("makeOrder.do")
+    @ResponseBody
+    public String makeOrder(HttpServletRequest request, Integer[] goodsIds,BigDecimal ordersPrice,Integer orderSource,Integer orderPayType) throws Exception{
+    	Users user = getSessionUser(request);
+    	log.info("***********************用户"+user.getUsername()+"来下单啦*************************************** \n "
+    			+ "makeOrder新增商品订单  goodsIds："+JSON.toJSONString(goodsIds)+" ordersPrice:"+ordersPrice
+    			+" orderSource:"+orderSource+" orderPayType:"+orderPayType);
+    	JsonContent jsonContent = new JsonContent();
+    	
+    	String actionPath = "makeOrder";
+    	boolean b = powerService.makeOrder(user,actionPath,goodsIds, ordersPrice,orderSource,orderPayType);
+    	if(b){
+    		jsonContent.setCode(EnumMessageCode.code1.getId());
+    	}else{
+    		jsonContent.setCode(EnumMessageCode.code4.getId());
+    	}
+    	jsonContent.setMessage(EnumMessageCode.getDescById(jsonContent.getCode()));
+    	
+    	log.info("makeOrder新增一条单商品订单返回："+JSON.toJSONString(jsonContent));
+		return JSON.toJSONString(jsonContent);
+    }
+    
     @RequestMapping("goodsListByGoodsTypeId.do")
     @ResponseBody
     public String goodsListByGoodsTypeId(HttpServletRequest request , int goodsTypeId) throws Exception{
@@ -169,6 +214,27 @@ public class PowerController extends BaseController{
     	writer.write(retStr);
     }
     
+    @RequestMapping("updateAction.do")
+    @ResponseBody
+    public void updateAction(HttpServletRequest request, HttpServletResponse response,PrintWriter writer,Integer id,String actionName,String actionEName,Integer actionTypeId){
+    	Users user = getSessionUser(request);
+    	JsonContent jsonContent = new JsonContent();
+    	log.info("updateAction修改权限 --  userId："+user.getId()+" id:"+id+" actionName:"+actionName+" actionEName:"+actionEName+" actionTypeId:"+actionTypeId);
+    	
+    	String actionPath="updateAction";
+    	Boolean b = powerService.updateAction(user.getId(),actionPath,id,actionName,actionEName,actionTypeId);
+    	if(b){
+    		jsonContent.setCode(EnumMessageCode.code1.getId());
+    	}else{
+    		jsonContent.setCode(EnumMessageCode.code3.getId());
+    	}
+    	jsonContent.setMessage(EnumMessageCode.getDescById(jsonContent.getCode()));
+    	String retStr = JSON.toJSONString(jsonContent);
+    	log.info("新增权限类型 返回结果:"+retStr);
+    	
+    	writer.write(retStr);
+    }
+    
     @RequestMapping("updatePowerType.do")
     @ResponseBody
     public void updatePowerType(HttpServletRequest request, HttpServletResponse response,PrintWriter writer,Integer id,String powerTypeName){
@@ -192,9 +258,10 @@ public class PowerController extends BaseController{
     
     @RequestMapping("powerAddAction.do")
     @ResponseBody
-    public void powerAddAction(HttpServletRequest request, HttpServletResponse response, PrintWriter writer,int userId,int actionId,String action,String actionPath,int actionTypeId){
-    	log.info("userId："+userId+" actionId:"+actionId+" action:"+action+" actionPath:"+actionPath);
-    	Boolean b = powerService.powerAddAction(userId,actionId,action,actionPath,actionTypeId);
+    public void powerAddAction(HttpServletRequest request, HttpServletResponse response, PrintWriter writer,String action,String actionPath,int actionTypeId){ //int userId,int actionId,
+    	Users user = getSessionUser(request);
+    	log.info("添加权限userId："+user.getId()+" action:"+action+" actionPath:"+actionPath);
+    	Boolean b = powerService.powerAddAction(user.getId(),action,actionPath,actionTypeId);
     	if(b){
     		writer.print("success,Please refresh the page!");
 

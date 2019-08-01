@@ -37,6 +37,12 @@ public class Orders {
     @Column(name="orders_price", columnDefinition="decimal (10,2)")
     private BigDecimal ordersPrice;//此订单实付总金额(元)
     
+    @Column(name="order_source", columnDefinition="int (2)")
+    private Integer orderSource;//订单来源 (EnumOrderSource 来源：1 立即下单 、2 购物车下单) 
+    
+    @Column(name="order_pay_type", columnDefinition="int (2)")
+    private Integer orderPayType;//订单支付方式 (EnumOrderPay ：1 未支付 、2 微信支付、3支付宝支付、4银联支付、5其他) 
+    
     @Column(name="create_time", columnDefinition="datetime",updatable=false)
     private Date createTime;//创建日期
 
@@ -101,6 +107,24 @@ public class Orders {
 	public void setDelFlag(Boolean delFlag) {
 		this.delFlag = delFlag;
 	}
+
+	public Integer getOrderSource() {
+		return orderSource;
+	}
+
+	public void setOrderSource(Integer orderSource) {
+		this.orderSource = orderSource;
+	}
+
+	public Integer getOrderPayType() {
+		return orderPayType;
+	}
+
+	public void setOrderPayType(Integer orderPayType) {
+		this.orderPayType = orderPayType;
+	}
+
+	
     
     
 

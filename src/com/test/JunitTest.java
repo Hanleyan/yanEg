@@ -2,6 +2,10 @@ package com.test;
 
 import static org.junit.Assert.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+
 import org.junit.Test;
 
 /**
@@ -17,5 +21,17 @@ public class JunitTest {
 		int b = 5 / 4;
 		System.out.println(b);
 	}
-
+	
+	@Test
+	public void get(){
+		
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+		String orderNum = "";
+		
+		
+		
+		//orderNum = System.currentTimeMillis()+"";
+		orderNum = format.format(new Date());
+		System.out.println(orderNum);
+	}
 }

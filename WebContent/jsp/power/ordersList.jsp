@@ -33,7 +33,7 @@
 <jsp:include page="powerIndex.jsp" flush="true"/>
 	<div class="newCaozuo">
 		<div class="content">
-			<div style="width:55rem;height:32rem;background-color: #8e93982e">
+			<div style="background-color: #8e93982e">
 				<span style="font-size: 1.2rem;color: #ccccef;"><span style="color: #9cf9e0;">菜单定位：</span>${power.actionType.actionTypeName} --> ${power.action.action}</span>
 				<div class="content">
 					<div>
@@ -52,9 +52,13 @@
 									<%-- <p style='margin: 20px 0px 0px 117px;font-size: 23px;'><a href="<%=basePath%>power/showUserDetail.do?execUserId=${list.id}&userName=${list.username}" style="color: #d1cff1;text-decoration:none;" >${list.username}<span style="font-size: 12px;color: #adb5d2;">(${list.position} ${list.actionNum}个权限)</span></a></p>
 									 --%><tr>
 									<td>${atList.id}</td>
-									<td>${atList.actionTypeName}</td>
+									<td><input type="text" id="actionTypeName_${atList.id}" name="actionTypeName" value="${atList.actionTypeName}" disabled="disabled" style="background: #ffffff05;color: #efefef;font-size: 1rem;border: 1px;" ></td>
 									<td>${atList.createTime}</td>
-									<td></td>
+									<td>
+										<button class="updatePtype" id="updatePtype_${atList.id}" onclick="updatePtype(${atList.id})">修改</button>
+										<button class="butdo" id="butFalse_${atList.id}" onclick="subFalse(${atList.id})">取消</button>
+										<button class="butdo" id="butTrue_${atList.id}" onclick="subTrue(${atList.id})">确定</button>
+									</td>
 								</tr>
 								</c:forEach>
 								
@@ -69,7 +73,10 @@
 		</div>
 	</div>
 <script type="text/javascript">
+	$(".butdo").hide();
 
+
+	//新增权限类型
 	function addPowerType(){
 		$(".bigBox").remove();//防止多个bigBox出现
 		var addPtypeHtml=" <div class='bigBox' style='background-color: #023061;color: rgb(184, 201, 210);width: 15rem;height: 7.5rem;margin: 0 0 0 1.2rem;'> <h3 style='text-align: center;padding: 2px 0;'>请输入权限类型</h3> <div class='txtTip' style='text-align: center;padding: 2px 0;'>"
@@ -94,16 +101,59 @@
                 url: "<%=basePath%>/power/addPowerType.do",
                 cache : true, //(默认: true,dataType为script和jsonp时默认为false) jQuery 1.2 新功能，设置为 false 将不缓存此页面。
                 
-
                 success:function(data){
-                    if(data.code=="1"){
-                        alert(data.message);
+                	var jsonReturnObject = JSON.parse(data);
+                    if(jsonReturnObject.code=="1"){
+                        alert(jsonReturnObject.message);
                         window.location.reload();
                     }else{
-                    	alert(data.message);
+                    	alert(jsonReturnObject.message);
                     }
                 }
             });
+        });
+	}
+	
+	/*点击修改*/
+	function updatePtype(id){
+		$("#actionTypeName_"+id).attr("disabled",false);
+		$("#actionTypeName_"+id).css({"background":"#f5f5f5","color":"#020202"});
+		
+		$("#butFalse_"+id).show();
+		$("#butTrue_"+id).show();
+		$("#updatePtype_"+id).hide();
+	}
+	/*取消修改*/
+	function subFalse(id){
+		window.location.reload();
+		/* $("#actionTypeName_"+id).attr("disabled",true);
+		
+		$("#butFalse_"+id).hide();
+		$("#butTrue_"+id).hide();
+		$("#updatePtype_"+id).show(); */
+	}
+	/*确认修改  单个修改权限类型*/  
+	function subTrue(id){
+		var actionTypeName = $("#actionTypeName_"+id).val();
+		if(null == actionTypeName || actionTypeName ==""){
+			alert("类型名称不能为空");
+			return;
+		}
+		$.ajax({
+            type:"POST", //请求方式
+            data: {id:id,powerTypeName:actionTypeName},   
+            url: "<%=basePath%>/power/updatePowerType.do",
+            cache : true, //(默认: true,dataType为script和jsonp时默认为false) jQuery 1.2 新功能，设置为 false 将不缓存此页面。
+            
+            success:function(data){
+            	var jsonReturnObject = JSON.parse(data);
+                if(jsonReturnObject.code=="1"){
+                    /* alert(jsonReturnObject.message); */
+                    window.location.reload();
+                }else{
+                	alert(jsonReturnObject.message);
+                }
+            }
         });
 	}
 

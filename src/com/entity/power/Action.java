@@ -47,6 +47,10 @@ public class Action implements Serializable{
 
     @Column(name="del_flag", columnDefinition="Boolean")
     private Boolean delFlag;// 是否删除 true 删除  false 未删除  数据库  1 删除 0 未删除
+    
+    @Transient
+    private String actionTypeName;//权限分类 父级名称
+    
 
     public Integer getId() {
         return id;
@@ -111,6 +115,15 @@ public class Action implements Serializable{
 	public void setActionShowCode(Integer actionShowCode) {
 		this.actionShowCode = actionShowCode;
 	}
+
+	public String getActionTypeName() {
+		return actionTypeName;
+	}
+
+	public void setActionTypeName(String actionTypeName) {
+		this.actionTypeName = actionTypeName;
+	}
+	
     
     
 }
