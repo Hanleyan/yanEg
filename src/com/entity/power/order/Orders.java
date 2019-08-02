@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * 订单表
@@ -34,6 +35,12 @@ public class Orders {
     @Column(name="user_id", columnDefinition="int (11)")
     private Integer userId;//用户id
     
+    @Column(name="user_name", columnDefinition="varchar (50)")
+    private String userName;//用户昵称
+    
+    @Column(name="user_address", columnDefinition="varchar (500)")
+    private String userAddress;//配送地址
+    
     @Column(name="orders_price", columnDefinition="decimal (10,2)")
     private BigDecimal ordersPrice;//此订单实付总金额(元)
     
@@ -43,6 +50,9 @@ public class Orders {
     @Column(name="order_pay_type", columnDefinition="int (2)")
     private Integer orderPayType;//订单支付方式 (EnumOrderPay ：1 未支付 、2 微信支付、3支付宝支付、4银联支付、5其他) 
     
+    @Column(name="order_pay_time", columnDefinition="datetime")
+    private Date orderPayTime;//支付时间
+    
     @Column(name="create_time", columnDefinition="datetime",updatable=false)
     private Date createTime;//创建日期
 
@@ -51,6 +61,12 @@ public class Orders {
 
     @Column(name="del_flag", columnDefinition="Boolean")
     private Boolean delFlag;// 是否删除 true 删除  false 未删除  数据库  1 删除 0 未删除
+    
+    @Transient
+    private String orderSourceDesc; //订单来源描述
+    
+    @Transient
+    private String orderPayTypeDesc; //订单支付描述
 
 	public Integer getId() {
 		return id;
@@ -122,6 +138,46 @@ public class Orders {
 
 	public void setOrderPayType(Integer orderPayType) {
 		this.orderPayType = orderPayType;
+	}
+
+	public String getOrderSourceDesc() {
+		return orderSourceDesc;
+	}
+
+	public void setOrderSourceDesc(String orderSourceDesc) {
+		this.orderSourceDesc = orderSourceDesc;
+	}
+
+	public String getOrderPayTypeDesc() {
+		return orderPayTypeDesc;
+	}
+
+	public void setOrderPayTypeDesc(String orderPayTypeDesc) {
+		this.orderPayTypeDesc = orderPayTypeDesc;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getUserAddress() {
+		return userAddress;
+	}
+
+	public void setUserAddress(String userAddress) {
+		this.userAddress = userAddress;
+	}
+
+	public Date getOrderPayTime() {
+		return orderPayTime;
+	}
+
+	public void setOrderPayTime(Date orderPayTime) {
+		this.orderPayTime = orderPayTime;
 	}
 
 	

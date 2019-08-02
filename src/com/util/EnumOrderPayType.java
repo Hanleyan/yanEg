@@ -35,5 +35,22 @@ public enum EnumOrderPayType {
 		this.orderPayTypeDesc = orderPayTypeDesc;
 	}
 	
+	/**
+	 * orderPayTypeCode获取orderPayTypeDesc
+	 * @param code
+	 * @return
+	 */
+	public static String getOrderPayTypeDescByCode(Integer code){
+		String desc="-";
+		String orderPayTypeCode = code.toString();
+		for (EnumOrderPayType enumOrderPay : EnumOrderPayType.values()) {
+			if(enumOrderPay.getOrderPayTypeCode().equals(orderPayTypeCode)){
+				desc=enumOrderPay.getOrderPayTypeDesc();
+				break;
+			}
+		}
+		return desc;
+	}
+	
 	
 }

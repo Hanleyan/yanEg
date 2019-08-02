@@ -7,7 +7,7 @@ package com.util;
 public enum EnumOrderSource {
 
 	orderSource1("1","立即下单 "),
-	orderSource2("2","立即下单 "),
+	orderSource2("2","购物车下单 "),
 	;
 	
 	private String orderSourceCode;
@@ -32,6 +32,23 @@ public enum EnumOrderSource {
 	}
 	public void setOrderSourceDesc(String orderSourceDesc) {
 		this.orderSourceDesc = orderSourceDesc;
+	}
+	
+	/**
+	 * orderSourceCode获取orderSourceDesc
+	 * @param code
+	 * @return
+	 */
+	public static String getOrderSourceDescByCode(Integer code){
+		String desc="-";
+		String orderSourceCode = code.toString();
+		for (EnumOrderSource enumOrderSource : EnumOrderSource.values()) {
+			if(enumOrderSource.getOrderSourceCode().equals(orderSourceCode)){
+				desc=enumOrderSource.getOrderSourceDesc();
+				break;
+			}
+		}
+		return desc;
 	}
 	
 	

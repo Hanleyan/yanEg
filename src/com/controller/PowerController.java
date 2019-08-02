@@ -23,6 +23,7 @@ import com.entity.power.PowerPOJO;
 import com.entity.power.Users;
 import com.entity.power.goods.GoodsInfo;
 import com.entity.power.goods.GoodsType;
+import com.entity.power.order.Orders;
 import com.service.PowerService;
 import com.util.BaseController;
 import com.util.EnumMessageCode;
@@ -105,7 +106,8 @@ public class PowerController extends BaseController{
     		List<Position> positionList = powerService.lookAllPosition();
     		map.put("positionList", positionList);
     	}else if("lookAllUsers".equals(actionPath) ||"updateUserPower".equals(actionPath)){
-    		powerService.lookAllUsers(map);
+    		List<Users> userList = powerService.lookAllUsers();
+    		map.put("userList", userList);
     	}else if("updatePositionPower".equals(actionPath)){
     		List<Position> positionList = powerService.queryPowerForEveryPosition();
     		map.put("positionList", positionList);
@@ -131,6 +133,9 @@ public class PowerController extends BaseController{
 			map.put("actionList", actionList);
 			List<ActionType> actionTypeList = powerService.queryActionTypeList();
 			map.put("actionTypeList", actionTypeList);
+		}else if("ordersList".equals(actionPath)){
+			List<Orders> ordersList = powerService.queryOrdersList(null,null);
+			map.put("ordersList", ordersList);
 		}
     	
 
@@ -224,6 +229,8 @@ public class PowerController extends BaseController{
     	String actionPath="updateAction";
     	Boolean b = powerService.updateAction(user.getId(),actionPath,id,actionName,actionEName,actionTypeId);
     	if(b){
+    		//使session失效，让用户重新登入
+    		request.getSession().invalidate();
     		jsonContent.setCode(EnumMessageCode.code1.getId());
     	}else{
     		jsonContent.setCode(EnumMessageCode.code3.getId());

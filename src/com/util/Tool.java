@@ -504,7 +504,7 @@ public class Tool {
 	}
 	/** 订单编号*/
 	public static String getOrderNum(Integer userId)  {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
 		String orderNum = "";
 		
 		orderNum = format.format(new Date()) + userId+generateTextCode(6);

@@ -30,6 +30,9 @@ public class Users {
 
     @Column(name="age", columnDefinition="varchar (3)")
     private String age;//
+    
+    @Column(name="address", columnDefinition="varchar (500)")
+    private String address;//密码
 
     @Column(name="create_time", columnDefinition="datetime",updatable=false)
     private Date createTime;//创建日期
@@ -125,6 +128,14 @@ public class Users {
 
 	public void setPosition(String position) {
 		this.position = position;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 	
     

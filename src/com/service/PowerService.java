@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import com.entity.power.*;
 import com.entity.power.goods.GoodsInfo;
@@ -18,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -25,6 +27,10 @@ import org.springframework.ui.ModelMap;
 import com.alibaba.fastjson.JSON;
 import com.dao.inter.ISuperDao;
 import com.util.DateUtil;
+import com.util.EnumMessageCode;
+import com.util.EnumOrderPayType;
+import com.util.EnumOrderSource;
+import com.util.JsonContent;
 import com.util.Tool;
 
 /**
@@ -172,6 +178,14 @@ public class PowerService {
 		return list;
 		
 	}
+	/**
+	 * 获取所有商品List
+	 */
+	@SuppressWarnings("unchecked")
+	public List<GoodsInfo> getAllGoodsList(){
+		String hql="from GoodsInfo where 1=1 and delFlag = false ";
+		return (List<GoodsInfo>)superDao.getObjectList(hql);
+	}
     /**
      * 用户userId查 职位positionId
      */
@@ -210,6 +224,27 @@ public class PowerService {
 			aList.add(action);
 		}
 		return aList;
+    }
+    /**
+     * todo
+     * 用户userId查他的所有权限action  sql联查
+     */
+    public List<Action> getUserActionListByUserId(int userId){
+    	/* List<Action> aList = new ArrayList<Action>();
+    	//查他的所有权限关系
+    	List<UserWithActionInfo> uActionInfoList=queryUserWithActionInfoListByUserId(userId);
+		for (UserWithActionInfo userWithActionInfo : uActionInfoList) {
+			Action action = queryActionByActionId(userWithActionInfo.getActionId());
+			aList.add(action);
+		}*/
+    	
+    	String sql="";
+    	
+    	List<Action> actions = superDao.getListBySql(Action.class, sql);
+		
+		
+		
+		return actions;
     }
     /**
      * 用户positionId查position
@@ -338,7 +373,7 @@ public class PowerService {
     /**
      * 查看所有的用户
      */
-    public void lookAllUsers(ModelMap m ){
+    public List<Users> lookAllUsers(){
     	String hql="from Users where 1=1 and delFlag = false";
     	@SuppressWarnings("unchecked")
 		List<Users> userList = (List<Users>)superDao.getObjectList(hql);
@@ -354,8 +389,9 @@ public class PowerService {
 					users.setPosition("暂无职位");
 				}
 			}
-			m.put("userList", userList);
+			
 		}
+		return userList;
     }
     /**
      * 查所有权限
@@ -422,9 +458,40 @@ public class PowerService {
     
     /*************************  各种添加方法    start *******************************************************/
     
-    
+    /**
+     * 订单列表
+     * @param pageno
+     * @param pagesize
+     * @return
+     */
+	public List<Orders> queryOrdersList(String pageno,String pagesize){
+    	
+    	List<Orders> orderList = queryAllOrders();
+    	for (Orders orders : orderList) {
+    		if(orders.getOrderSource() != null){
+    			orders.setOrderSourceDesc(EnumOrderSource.getOrderSourceDescByCode(orders.getOrderSource()));
+    			orders.setOrderPayTypeDesc(EnumOrderPayType.getOrderPayTypeDescByCode(orders.getOrderPayType()));
+    		}
+		}
+
+    	return orderList;
+    	
+    }
     
     /**
+     * 查询订单
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+	private List<Orders> queryAllOrders() {
+    	
+    	String hql = "from Orders where delFlag = false ";
+    	String whereOrderByHql = " order by createTime desc";
+    	
+    	hql = hql + whereOrderByHql;
+    	return (List<Orders>)superDao.getObjectList(hql);
+	}
+	/**
      * 新增订单 ( 来源： 立即下单 、购物车下单)
      * @param user 用户
      * @param actionPath 新增订单权限
@@ -461,6 +528,50 @@ public class PowerService {
         }       
         return flag;
     }  
+    /**
+     * 不检查下单权限，适用于批量新增订单业务 ( 来源： 立即下单 、购物车下单)
+     * @param user 用户
+     * @param actionPath 新增订单权限
+     * @param goodsIds 商品id数组
+     * @param ordersPrice 订单价格
+     * @param orderSource 订单来源
+     * @param orderPayType 订单支付方式
+     * @return Boolean
+     */
+    public JsonContent makeOrder(Users user, Integer[] goodsIds,BigDecimal ordersPrice,Integer orderSource,Integer orderPayType){
+    	JsonContent json = new JsonContent();
+        
+        //判断物品IDgoodsId是否为空 ||判断物品价格是否为空 || 判断下单方式 || 判断支付方式是否为空
+        if(goodsIds.length == 0 || StringUtils.isEmpty(ordersPrice.toString()) || StringUtils.isEmpty(orderSource.toString()) 
+        		|| StringUtils.isEmpty(orderPayType.toString())){
+        	
+        	json.setCode(EnumMessageCode.code7.getId());
+        	json.setMessage(EnumMessageCode.getDescById(json.getCode()));
+        	json.setResult("user:"+JSON.toJSONString(user)+ "\n"+"goodsIds:"+JSON.toJSONString(goodsIds)+ "\n"+
+        			"ordersPrice:"+JSON.toJSONString(ordersPrice)+ "\n"+"orderSource"+JSON.toJSONString(orderSource)+ "\n"+"orderPayType:"+JSON.toJSONString(orderPayType));
+        	return json;
+        }
+       
+       
+    	//添加订单
+    	Serializable id = saveOrder(user,ordersPrice,orderSource,orderPayType);
+    	if(id != null){
+    		//添加订单物品记录表
+    		//Integer[] goodsIds = {goodsId};//物品id数组
+    		Boolean b = saveOrderGoodsRecords(user,goodsIds,Integer.valueOf(id.toString()));
+    		if(b){
+    			json.setCode(EnumMessageCode.code1.getId());
+            	json.setMessage(EnumMessageCode.getDescById(json.getCode()));
+    		}else{
+    			json.setCode(EnumMessageCode.code3.getId());
+            	json.setMessage("添加订单物品记录表失败");
+            	json.setResult("user:"+JSON.toJSONString(user)+ " \n"+"goodsIds:"+JSON.toJSONString(goodsIds)+ " \n"+
+            			"ordersPrice:"+JSON.toJSONString(ordersPrice)+ " \n"+"orderSource"+JSON.toJSONString(orderSource)+ " \n"+"orderPayType:"+JSON.toJSONString(orderPayType));
+    		}
+    	}
+               
+        return json;
+    } 
     
     /**保存订单*/
     private Serializable saveOrder(Users user,BigDecimal ordersPrice,Integer orderSource,Integer orderPayType){
@@ -470,10 +581,14 @@ public class PowerService {
     	orders.setDelFlag(false);
     	
     	orders.setUserId(user.getId());
+    	orders.setUserName(user.getUsername());
+    	orders.setUserAddress(user.getAddress());
+    	
     	orders.setOrderNo(Tool.getOrderNum(user.getId()));
     	orders.setOrdersPrice(ordersPrice);
     	orders.setOrderSource(orderSource);
     	orders.setOrderPayType(orderPayType);
+    	
     	Serializable id = superDao.addObject(orders);
     	
     	return id;
@@ -829,8 +944,8 @@ public class PowerService {
     	/*String hql = "from  UserWithActionInfo where 1=1 and delFlag = false and userId="+userId+" and actionId="+actionId;
         UserWithActionInfo uwa = (UserWithActionInfo)superDao.getObjectByHql(hql);*/
     	
-    	String sql = "select uwa.id from action act,user_with_action_info uwa where act.del_flag=false and uwa.del_flag=false \n"
-    	+" and act.id = uwa.action_id and act.action_path='"+actionPath+"'";
+    	String sql = "select uwa.id from action act,user_with_action_info uwa where act.del_flag=false and uwa.del_flag=false "
+    	+" and act.id = uwa.action_id and act.action_path='"+actionPath+"' and uwa.user_id="+userId;
     	Object id = superDao.getObjectBySql(sql);
         if(id != null) return true;
         else return false;
@@ -955,6 +1070,167 @@ public class PowerService {
     	String hql="update UserWithActionInfo set updateTime='"+DateUtil.getCurrentDate("yyyy-MM-dd HH:mm:ss")+"',delFlag = "+boo+" where 1=1 and actionId="+actId+" and userId="+execUserId;
 		Boolean b = superDao.updateObjectByHql(hql);
 		return b;
+    }
+    
+    /**
+     * 随机一个用户，下100个订单，每个订单随机商品、随机商品数量
+     * @throws InterruptedException 
+     */
+    //@Scheduled(cron="00 30 23 * * ?") 每天23:30触发
+    @Scheduled(cron = "00 36 15 * * ?")
+    public void addRegularRandomRrders() throws InterruptedException{
+    	Random r = new Random();
+    	int orderSuccessCount = 0;
+    	int orderFailCount = 0;
+    	
+    	//获取用户列表
+    	List<Users> userList = lookAllUsers();
+    	
+    	
+		int a = r.nextInt(userList.size());
+		Users user = userList.get(a);//获取随机用户
+		log.info("匹配到的下单用户信息："+JSON.toJSONString(user));
+    	
+    	String actionPath = "makeOrder";//下单权限
+    	//查看此人有没有操作这个的权限
+        Boolean bool = isPowerToUserWithAction(user.getId(),actionPath);
+        if(bool){
+        	log.info("准备下100个订单啦：  预备备");
+        	Thread.sleep(1000);
+        	System.out.println("3");
+        	Thread.sleep(1000);
+        	System.out.println("2");
+        	Thread.sleep(1000);
+        	System.out.println("1");
+        	System.out.println("跑起来...");
+        	//随机100个订单
+        	for (int i = 0; i < 100; i++) {
+        		List<GoodsInfo> goodsList = getAllGoodsList();
+        		int count = r.nextInt(goodsList.size());//获取随机商品数量
+        		System.out.println("第"+i+"个订单，商品"+count+"个");
+        		
+        		BigDecimal ordersPrice = new BigDecimal("0");
+        		Integer[] goodsIds = new Integer[count];
+        		for (int j = 0; j < goodsIds.length; j++) {
+        			int goods = r.nextInt(goodsList.size());
+        			GoodsInfo entity = goodsList.get(goods);//获取随机商品
+        			
+        			goodsIds[j] = entity.getId();//商品id添加数组
+        			ordersPrice = ordersPrice.add(entity.getGoodsPrice());
+				}
+        		
+        		int osNum = EnumOrderSource.values().length;
+        		int osCount = r.nextInt(osNum);
+        		String orderSource = EnumOrderSource.values()[osCount].getOrderSourceCode();//获取随机下单方式
+        		System.out.println("第"+i+"个订单，下单方式是 "+EnumOrderSource.values()[osCount].getOrderSourceDesc());
+        		
+        		int optNum = EnumOrderPayType.values().length;
+        		int optCount = r.nextInt(optNum);
+        		String orderPayType = EnumOrderPayType.values()[optCount].getOrderPayTypeCode();//获取随机支付方式
+        		System.out.println("第"+i+"个订单，下单支付方式是 "+EnumOrderPayType.values()[optCount].getOrderPayTypeDesc());
+        		
+        		JsonContent json = makeOrder(user, goodsIds, ordersPrice, Integer.parseInt(orderSource), Integer.parseInt(orderPayType));
+        		if(EnumMessageCode.code1.getId().equals(json.getCode())){
+        			System.out.println("第"+i+"个订单，下单结果  "+json.getMessage());
+        			orderSuccessCount++;
+        		}else{
+        			orderFailCount++;
+        			System.out.println("第"+i+"个订单，下单结果  "+json.getMessage());
+        			log.info(JSON.toJSON(json));
+        		}
+        		
+        		
+			}
+        	log.info("随机用户："+user.getUsername()+",成功下单"+orderSuccessCount+"个，失败"+orderFailCount+"个");
+        	
+        }else{
+        	log.info("随机用户："+user.getUsername()+",成功下单"+orderSuccessCount+"个，失败"+orderFailCount+"个");
+        	log.info("随机用户："+user.getUsername()+",没下单权限");
+        }
+    	
+    }
+    
+    /**
+     * 随机10用户(可重复)，每个用户下[0,20]个订单，每个订单随机商品、随机商品数量
+     * @throws InterruptedException 
+     */
+    //@Scheduled(cron="00 30 23 * * ?") 每天23:30触发
+    @Scheduled(cron = "00 28 16 * * ?")
+    public void addRandomOrders() throws InterruptedException{
+    	Random r = new Random();
+    	int orderSuccessCount = 0;
+    	int orderFailCount = 0;
+    	
+    	//获取用户列表
+    	List<Users> userList = lookAllUsers();
+    	
+    	for (int p = 0; p < 10; p++) {
+    		orderSuccessCount = 0;//循环进来重新赋值
+        	orderFailCount = 0;//循环进来重新赋值
+    		int a = r.nextInt(userList.size());
+    		Users user = userList.get(a);//获取随机用户
+    		log.info("随机到的第"+(p+1)+"个下单用户信息："+JSON.toJSONString(user));
+        	
+        	String actionPath = "makeOrder";//下单权限
+        	//查看此人有没有操作这个的权限
+            Boolean bool = isPowerToUserWithAction(user.getId(),actionPath);
+            if(bool){
+            	int orderCount = r.nextInt(20)+1;//[0,20]
+            	log.info("第"+(p+1)+"用户准备下"+orderCount+"个订单啦：  预备备");
+            	Thread.sleep(1000);
+            	System.out.println("3");
+            	Thread.sleep(1000);
+            	System.out.println("2");
+            	Thread.sleep(1000);
+            	System.out.println("1");
+            	System.out.println("跑起来...");
+            	//随机100个订单
+            	for (int i = 1; i <= orderCount; i++) {
+            		List<GoodsInfo> goodsList = getAllGoodsList();
+            		int count = r.nextInt(goodsList.size());//获取随机商品数量
+            		System.out.println("第"+(p+1)+"个用户第"+i+"个订单，商品"+count+"个");
+            		
+            		BigDecimal ordersPrice = new BigDecimal("0");
+            		Integer[] goodsIds = new Integer[count];
+            		for (int j = 0; j < goodsIds.length; j++) {
+            			int goods = r.nextInt(goodsList.size());
+            			GoodsInfo entity = goodsList.get(goods);//获取随机商品
+            			
+            			goodsIds[j] = entity.getId();//商品id添加数组
+            			ordersPrice = ordersPrice.add(entity.getGoodsPrice());
+    				}
+            		
+            		int osNum = EnumOrderSource.values().length;
+            		int osCount = r.nextInt(osNum);
+            		String orderSource = EnumOrderSource.values()[osCount].getOrderSourceCode();//获取随机下单方式
+            		System.out.println("第"+(p+1)+"个用户第"+i+"个订单，下单方式是 "+EnumOrderSource.values()[osCount].getOrderSourceDesc());
+            		
+            		int optNum = EnumOrderPayType.values().length;
+            		int optCount = r.nextInt(optNum);
+            		String orderPayType = EnumOrderPayType.values()[optCount].getOrderPayTypeCode();//获取随机支付方式
+            		System.out.println("第"+(p+1)+"个用户第"+i+"个订单，下单支付方式是 "+EnumOrderPayType.values()[optCount].getOrderPayTypeDesc());
+            		
+            		JsonContent json = makeOrder(user, goodsIds, ordersPrice, Integer.parseInt(orderSource), Integer.parseInt(orderPayType));
+            		if(EnumMessageCode.code1.getId().equals(json.getCode())){
+            			System.out.println("第"+(p+1)+"个用户第"+i+"个订单，下单结果  "+json.getMessage());
+            			orderSuccessCount++;
+            		}else{
+            			orderFailCount++;
+            			System.out.println("第"+(p+1)+"个用户第"+i+"个订单，下单结果  "+json.getMessage());
+            			log.info(JSON.toJSON(json));
+            		}
+            		
+            		
+    			}
+            	log.info("第"+(p+1)+"个用户随机用户："+user.getUsername()+",成功下单"+orderSuccessCount+"个，失败"+orderFailCount+"个");
+            	
+            }else{
+            	log.info("第"+(p+1)+"个用户随机用户："+user.getUsername()+",没下单权限,成功下单"+orderSuccessCount+"个，失败"+orderFailCount+"个");
+            }
+		}
+    	
+    	
+    	
     }
     
 }
