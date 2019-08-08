@@ -137,7 +137,7 @@ public class APPServer extends Thread{
 			System.out.println("花费时间："+(endTime-startTime)+"毫秒.");
 			return json;
 		}
-		json.setCode(EnumMessageCode.code002.getId());
+		json.setCode(EnumMessageCode.code7.getId());
 		return json;
 	}
 
@@ -179,7 +179,7 @@ public class APPServer extends Thread{
 			System.out.println("花费时间："+(endTime-startTime)+"毫秒.");
 			return json;
 		}
-		json.setCode(EnumMessageCode.code002.getId());
+		json.setCode(EnumMessageCode.code7.getId());
 		return json;
 	}
 
@@ -202,7 +202,7 @@ public class APPServer extends Thread{
 			System.out.println("花费时间："+(endTime-startTime)+"毫秒.");
 			return json;
 		}
-		json.setCode(EnumMessageCode.code002.getId());
+		json.setCode(EnumMessageCode.code7.getId());
 		return json;
 	}
 
@@ -225,7 +225,7 @@ public class APPServer extends Thread{
 			System.out.println("花费时间："+(endTime-startTime)+"毫秒.");
 			return json;
 		}
-		json.setCode(EnumMessageCode.code002.getId());
+		json.setCode(EnumMessageCode.code7.getId());
 		return json;
 	}
 
@@ -250,7 +250,7 @@ public class APPServer extends Thread{
 			System.out.println("花费时间："+(endTime-startTime)+"毫秒.");
 			return json;
 		}
-		json.setCode(EnumMessageCode.code002.getId());
+		json.setCode(EnumMessageCode.code7.getId());
 		return json;
 	}
 
@@ -274,7 +274,7 @@ public class APPServer extends Thread{
 			System.out.println("花费时间："+(endTime-startTime)+"毫秒.");
 			return json;
 		}
-		json.setCode(EnumMessageCode.code002.getId());
+		json.setCode(EnumMessageCode.code7.getId());
 		return json;
 	}
 
@@ -300,7 +300,7 @@ public class APPServer extends Thread{
 			System.out.println("花费时间："+(endTime-startTime)+"毫秒.");
 			return json;
 		}
-		json.setCode(EnumMessageCode.code002.getId());
+		json.setCode(EnumMessageCode.code7.getId());
 		return json;
 	}
 	
@@ -322,7 +322,7 @@ public class APPServer extends Thread{
 			System.out.println("花费时间："+(endTime-startTime)+"毫秒.");
 			return json;
 		}
-		json.setCode(EnumMessageCode.code002.getId());
+		json.setCode(EnumMessageCode.code7.getId());
 		return json;
 	}
 	

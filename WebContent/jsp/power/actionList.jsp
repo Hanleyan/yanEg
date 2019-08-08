@@ -37,7 +37,7 @@
 				<span style="font-size: 1.2rem;color: #ccccef;"><span style="color: #9cf9e0;">菜单定位：</span>${power.actionType.actionTypeName} --> ${power.action.action}</span>
 				<div class="content">
 					<div>
-						<div style='width:270px; margin: 20px 0px 0px 340px;color: #d1cff1;font-size: 23px;'>权限类型列表<button class="butt" onclick="addPower()">增加一个权限</button></div>
+						<div style='width:270px; margin: 20px 0px 0px 340px;color: #d1cff1;font-size: 23px;'>权限列表<button class="butt" onclick="addPower()">增加一个权限</button></div>
 						<table cellpadding="0" cellspacing="0" border="1">
 							<thead>
 								<tr>

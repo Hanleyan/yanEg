@@ -63,7 +63,7 @@ public class BizService extends HttpServlet{
 			JsonContent json = new JsonContent();
 			try {
 				if (null == methodcode || methodcode.trim().equals("")) {
-					json.setCode(EnumMessageCode.code000.getId());
+					json.setCode(EnumMessageCode.code2.getId());
 				} else {
 					APPServer service = ContextLoaderListener.getCurrentWebApplicationContext().getBean(APPServer.class);
 					if (methodcode.equals("001")) {
@@ -98,7 +98,7 @@ public class BizService extends HttpServlet{
 					
 
 					else {
-						json.setCode(EnumMessageCode.code000.getId());
+						json.setCode(EnumMessageCode.code2.getId());
 					}
 
 				}
