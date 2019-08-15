@@ -485,7 +485,7 @@ public class PowerService {
 	private List<Orders> queryAllOrders() {
     	
     	String hql = "from Orders where delFlag = false ";
-    	String whereOrderByHql = " order by createTime desc";
+    	String whereOrderByHql = " order by id desc";
     	
     	hql = hql + whereOrderByHql;
     	return (List<Orders>)superDao.getObjectList(hql);
