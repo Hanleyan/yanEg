@@ -1073,7 +1073,7 @@ public class PowerService {
     }
     
     /**
-     * 随机一个用户，下100个订单，每个订单随机商品、随机商品数量
+     * 随机一个用户，下1000个订单，每个订单随机商品、随机商品数量
      * @throws InterruptedException 
      */
     //@Scheduled(cron="00 30 23 * * ?") 每天23:30触发
@@ -1104,7 +1104,7 @@ public class PowerService {
         	System.out.println("1");
         	System.out.println("跑起来...");
         	//随机100个订单
-        	for (int i = 0; i < 100; i++) {
+        	for (int i = 0; i < 1000; i++) {
         		List<GoodsInfo> goodsList = getAllGoodsList();
         		int count = r.nextInt(goodsList.size());//获取随机商品数量
         		System.out.println("第"+i+"个订单，商品"+count+"个");
@@ -1151,7 +1151,7 @@ public class PowerService {
     }
     
     /**
-     * 随机10用户(可重复)，每个用户下[0,20]个订单，每个订单随机商品、随机商品数量
+     * 随机100用户(可重复)，每个用户下[0,200]个订单，每个订单随机商品、随机商品数量
      * @throws InterruptedException 
      */
     //@Scheduled(cron="00 30 23 * * ?") 每天23:30触发
@@ -1164,7 +1164,7 @@ public class PowerService {
     	//获取用户列表
     	List<Users> userList = lookAllUsers();
     	
-    	for (int p = 0; p < 10; p++) {
+    	for (int p = 0; p < 100; p++) {
     		orderSuccessCount = 0;//循环进来重新赋值
         	orderFailCount = 0;//循环进来重新赋值
     		int a = r.nextInt(userList.size());
@@ -1175,7 +1175,7 @@ public class PowerService {
         	//查看此人有没有操作这个的权限
             Boolean bool = isPowerToUserWithAction(user.getId(),actionPath);
             if(bool){
-            	int orderCount = r.nextInt(20)+1;//[0,20]
+            	int orderCount = r.nextInt(200)+1;//[0,200]
             	log.info("第"+(p+1)+"用户准备下"+orderCount+"个订单啦：  预备备");
             	Thread.sleep(1000);
             	System.out.println("3");
