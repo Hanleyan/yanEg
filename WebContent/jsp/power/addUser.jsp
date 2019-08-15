@@ -49,6 +49,8 @@
 </div>
 
 <script type="text/javascript">
+	/***隐藏初始页面内容**/
+	$(".powerCaozuo").hide();
 
 	/* $(document).on("click","input[name=checkbox]",function(){
   	 	$(this).prop("checked");

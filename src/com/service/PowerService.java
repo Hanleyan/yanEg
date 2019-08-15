@@ -1150,7 +1150,7 @@ public class PowerService {
     }
     
     /**
-     * 随机10用户(可重复)，每个用户下[0,20]个订单，每个订单随机商品、随机商品数量
+     * 随机10用户(可重复)，每个用户下[0,200]个订单，每个订单随机商品、随机商品数量
      * @throws InterruptedException 
      */
     //@Scheduled(cron="00 30 23 * * ?") 每天23:30触发
@@ -1174,7 +1174,7 @@ public class PowerService {
         	//查看此人有没有操作这个的权限
             Boolean bool = isPowerToUserWithAction(user.getId(),actionPath);
             if(bool){
-            	int orderCount = r.nextInt(20)+1;//[0,20]
+            	int orderCount = r.nextInt(200)+1;//[0,200]
             	log.info("第"+(p+1)+"用户准备下"+orderCount+"个订单啦：  预备备");
             	Thread.sleep(1000);
             	System.out.println("3");

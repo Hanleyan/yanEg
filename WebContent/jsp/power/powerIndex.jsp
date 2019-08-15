@@ -80,7 +80,8 @@ ${actionList} --%>
 		<div class="contentRight cl">
 			<div class="topContent" >您的操作  <span class="tarbar"></span></div>
 			<div class="powerCaozuo">
-				
+				<a href="http://tool.yiixue.com/Tools/mk_music/" target="_blank"  style="color:wheat">听歌房</a>
+				<a href="http://tool.yiixue.com/Tools/cs/" target="_blank"  style="color:wheat">猜数小游戏</a>
 			</div>
 		</div>
 	</div>
