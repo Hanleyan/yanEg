@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -37,7 +38,7 @@ import com.util.JsonContent;
 @Controller
 @RequestMapping("power/")
 public class PowerController extends BaseController{
-    private static final Log log = LogFactory.getLog(PowerController.class);
+	private final static Logger log = Logger.getLogger(PowerController.class);
 
     @Autowired
     private PowerService powerService;
