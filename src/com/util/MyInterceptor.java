@@ -27,6 +27,18 @@ public class MyInterceptor extends BaseController implements HandlerInterceptor 
         request.setAttribute("session", "session");//这个是放到session范围内的，如果环境允许的话它只能在局部的隔离的会话中访问，否则就是在普通的当前会话中可以访问
         request.setAttribute("globalSession", "globalSession");//如果环境允许的话，它能在全局共享的会话中访问，否则就是在普通的当前会话中访问
         
+        /**1. getServletPath():获取能够与“url-pattern”中匹配的路径，注意是完全匹配的部分，*的部分不包括。 
+			2. getPageInfo():与getServletPath()获取的路径互补，能够得到的是“url-pattern”中*d的路径部分 
+			3. getContextPath():获取项目的根路径 
+			4. getRequestURI:获取根路径到地址结尾 
+			5. getRequestURL:获取请求的地址链接（浏览器中输入的地址） 
+			6. getServletContext().getRealPath(“/”):获取“/”在机器中的实际地址 
+			7. getScheme():获取的是使用的协议(http 或https) 
+			8. getProtocol():获取的是协议的名称(HTTP/1.11) 
+			9. getServerName():获取的是域名(xxx.com) 
+			10. getLocalName:获取到的是IP
+			***/
+        
         /*if ("GET".equalsIgnoreCase(request.getMethod())) {
             //RequestUtil.saveRequest();
         	logger.info("拦截进登入  "+request.getContextPath()+"/jsp/power/powerLogin.jsp");

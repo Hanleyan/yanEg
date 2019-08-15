@@ -15,9 +15,7 @@ import com.entity.power.order.OrderGoodsRecords;
 import com.entity.power.order.Orders;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.poi.util.StringUtil;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -31,6 +29,7 @@ import com.util.EnumMessageCode;
 import com.util.EnumOrderPayType;
 import com.util.EnumOrderSource;
 import com.util.JsonContent;
+import com.util.MyInterceptor;
 import com.util.Tool;
 
 /**
@@ -41,7 +40,7 @@ import com.util.Tool;
 @Service("PowerService")
 @Transactional
 public class PowerService {
-    private static final Log log = LogFactory.getLog(PowerService.class);
+    private final static Logger log = Logger.getLogger(PowerService.class);
 
     @Autowired
     ISuperDao superDao;
@@ -486,7 +485,7 @@ public class PowerService {
 	private List<Orders> queryAllOrders() {
     	
     	String hql = "from Orders where delFlag = false ";
-    	String whereOrderByHql = " order by createTime desc";
+    	String whereOrderByHql = " order by id desc";
     	
     	hql = hql + whereOrderByHql;
     	return (List<Orders>)superDao.getObjectList(hql);
@@ -1151,7 +1150,11 @@ public class PowerService {
     }
     
     /**
+<<<<<<< HEAD
      * 随机100用户(可重复)，每个用户下[0,200]个订单，每个订单随机商品、随机商品数量
+=======
+     * 随机10用户(可重复)，每个用户下[0,200]个订单，每个订单随机商品、随机商品数量
+>>>>>>> refs/remotes/origin/master
      * @throws InterruptedException 
      */
     //@Scheduled(cron="00 30 23 * * ?") 每天23:30触发
